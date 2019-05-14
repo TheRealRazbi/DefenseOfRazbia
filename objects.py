@@ -34,7 +34,7 @@ class BaseTile:
     @property
     def area(self):
         return self._position[0], self._position[1],\
-                self._position[0]+BaseTile.size[0] + self._position[1]+BaseTile.size[1]
+                self._position[0]+BaseTile.size[0],  self._position[1]+BaseTile.size[1]
 
     @property
     def position(self):
