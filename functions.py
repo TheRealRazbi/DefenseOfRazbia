@@ -3,6 +3,32 @@ import pickle
 import pygame
 
 
+def scale_size(size, coordinates, debug=False):
+    default_size = 800, 600
+    size_scale = size[0] / default_size[0], size[1] / default_size[1]
+    result = []
+    if debug:
+        print("scale size is", size_scale)
+        print(coordinates)
+    for _ in coordinates:
+        temp = []
+        for index, number in enumerate(_):
+            if index % 2 == 0:
+                number *= size_scale[1]
+            elif index % 2 != 0:
+                number *= size_scale[0]
+
+            temp.append(int(number))
+
+        result.append(temp)
+
+
+    if debug:
+        print(result)
+
+    return result
+
+
 def create_track(list_of_coordionates, name):
     with open(f'lib/tracks/{name}.txt', 'wb') as f:
         pickle.dump(list_of_coordionates, f)
@@ -27,6 +53,7 @@ def build_base_track(size, screen):
 
     for tile in grid:
         for actual_tile in tile:
+
             screen.blit(actual_tile.image, (actual_tile.position[0],
                                             actual_tile.position[1],
                                             actual_tile.position[0]+actual_tile.size[0],
@@ -48,7 +75,19 @@ def build_unit_track(track, screen):
     for l1 in grid:
         for l2 in l1:
             for tile in l2:
-                screen.blit(tile.image, (tile.position[0],
-                                         tile.position[1],
-                                         tile.position[0] + tile.size[0],
-                                         tile.position[1] + tile.size[1]))
+                top_x, top_y, bottom_x, bottom_y = tile.area
+
+                # if top_x < bottom_x:
+                #     x = bottom_x
+                #     bottom_x = top_x
+                #     top_x = x
+                #
+                # if top_y < bottom_y:
+                #     y = bottom_y
+                #     bottom_y = top_y
+                #     top_y = y
+
+                screen.blit(tile.image, (top_x,
+                                         top_y,
+                                         bottom_x+top_x,
+                                         bottom_y+top_y))
