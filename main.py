@@ -6,11 +6,12 @@ from functions import build_base_track, build_unit_track, load_track, create_tra
 if __name__ == '__main__':
     size = width, height = 800, 600
 
-
     unit_track = load_track(also_print=True)
 
     unit_track = scale_size(size, unit_track)
-    # create_track([[60, 0, 90, 170], [90, 140, 190, 170], [180, 70, 210, 170]], "default_track")
+    # create_track([[60, 0, 90, 170], [90, 140, 190, 170], [180, 70, 210, 170],
+    #               [180, 70, 620, 100], [620, 100, 590, 270]],
+    #              "default_track")
     # unit_track = [[160, 70, 170, 190]]
     pygame.init()
 
