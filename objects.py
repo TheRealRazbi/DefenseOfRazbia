@@ -13,6 +13,14 @@ class Entity:
         return cls.entities
 
 
+class Unit(Entity):
+    pass
+
+
+
+
+
+
 class BaseTile:
     tiles = 0
     size = 10, 10

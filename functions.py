@@ -1,5 +1,6 @@
 from objects import BaseTile, UnitTile
 import pickle
+import pygame
 
 
 def scale_size(size, coordinates, debug=False):
@@ -29,25 +30,8 @@ def scale_size(size, coordinates, debug=False):
     return result
 
 
-def create_track(lines, name):
-
-
-
-
-    save_track(lines, name)
-
-
-def save_track(list_of_coordionates, name):
-    with open(f'lib/tracks/{name}.txt', 'wb') as f:
-        pickle.dump(list_of_coordionates, f)
-
-
-def load_track(name='default_track', also_print=False):
-    with open(f'lib/tracks/{name}.txt', 'rb') as f:
-        res = pickle.load(f)
-    if also_print:
-        print(res)
-    return res
+def load_track(name='default_map'):
+    return pygame.image.load(f'lib/tracks/{name}/{name}.png')
 
 
 def build_base_track(size, screen):

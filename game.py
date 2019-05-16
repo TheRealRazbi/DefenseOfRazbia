@@ -4,31 +4,43 @@ import sys
 
 
 class Game:
-    def __init__(self, size: tuple, track_name: str):
+    def __init__(self, size: tuple, map: str):
         pygame.init()
         self.width = size[0]
         self.height = size[1]
         self.towers = []
         self.units = []
         self.screen = pygame.display.set_mode((self.width, self.height))
-        self.track_name = track_name
+        self.map = map
+        self.clicks = []
 
     def run(self):
         run = True
 
-        self._select_track(track_name=self.track_name)
+        self.screen.fill((0, 0, 0))
+        self._select_track(map=self.map)
         self._build_track()
         while run:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: sys.exit()
+
+                pos = pygame.mouse.get_pos()
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    self.clicks.append(pos)
+                    print(self.clicks)
+
             pygame.display.flip()
 
-    def _select_track(self, track_name:str=''):
-        if track_name == '':
+
+
+
+    def _select_track(self, map:str=''):
+        if map == '':
             raise ValueError("Track name not specified")
 
-        self.track = load_track(name=track_name)
+        self.track = load_track(name=map)
 
     def _build_track(self):
-        build_base_track((self.width, self.height), self.screen)
-        build_unit_track(self.track, self.screen)
+        self.screen.blit(self.track, (0, 0))
+        # self.screen.
