@@ -1,7 +1,6 @@
 import pygame
-import sys
 from functions import build_base_track, build_unit_track, load_track, create_track, scale_size
-from objects import Game
+from game import Game
 
 
 if __name__ == '__main__':

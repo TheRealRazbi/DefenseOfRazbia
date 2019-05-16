@@ -1,6 +1,5 @@
-from functions import create_track, load_track, save_track
-from objects import Game
-
+from functions import create_track
+from game import Game
 if __name__ == '__main__':
     track_used = "buffer"
     size = (800, 600)
@@ -14,7 +13,10 @@ if __name__ == '__main__':
                   [380, 410, 350, 340], [380, 370, 800, 340], [0, 0, 0, 0]],
                  f"{track_used}")
 
-    unit_track = load_track(also_print=True, name=track_used)
 
-    game = Game(size)
+    # unit_track = load_track(also_print=True, name=track_used)
+
+    game = Game(size, track_used)
+
     game.run()
+

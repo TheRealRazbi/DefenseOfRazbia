@@ -1,24 +1,4 @@
 import pygame
-import sys
-import pygame
-
-
-class Game:
-    def __init__(self, size: tuple):
-        pygame.init()
-        self.width = size[0]
-        self.height = size[1]
-        self.towers = []
-        self.units = []
-
-
-    def run(self):
-        run = True
-
-        while run:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT: sys.exit()
-            pygame.display.flip()
 
 
 class Entity:

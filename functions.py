@@ -1,6 +1,5 @@
-from objects import TowerTile, BaseTile, UnitTile
+from objects import BaseTile, UnitTile
 import pickle
-import pygame
 
 
 def scale_size(size, coordinates, debug=False):
