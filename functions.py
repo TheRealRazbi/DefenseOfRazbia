@@ -1,6 +1,15 @@
-from objects import BaseTile, UnitTile
+import objects
 import pickle
 import pygame
+
+
+def scale_pos(size: tuple, number: tuple):
+    default_size = 800, 600
+    if default_size == size:
+        return number
+    scale = size[0] / default_size[0], size[1] / default_size[1]
+
+    return [a/b for a, b in zip(number, scale)]
 
 
 def scale_size(size, coordinates, debug=False):
@@ -30,17 +39,30 @@ def scale_size(size, coordinates, debug=False):
     return result
 
 
+def create_path(path, name):
+    with open(f"lib/tracks/{name}/path.txt", "wb") as f:
+        pickle.dump(path, f)
+
+
 def load_track(name='default_map'):
     return pygame.image.load(f'lib/tracks/{name}/{name}.png')
+
+
+def load_path(name='default_map', also_print=False):
+    with open(f'lib/tracks/{name}/path.txt', 'rb') as f:
+        res = pickle.load(f)
+    if also_print:
+        print(res)
+    return res
 
 
 def build_base_track(size, screen):
     grid = [
         [
-            BaseTile((x, y))
-            for x in range(0, size[0], BaseTile.size[0])
+            objects.BaseTile((x, y))
+            for x in range(0, size[0], objects.BaseTile.size[0])
         ]
-        for y in range(0, size[1], BaseTile.size[1])
+        for y in range(0, size[1], objects.BaseTile.size[1])
     ]
 
     for tile in grid:
@@ -62,10 +84,10 @@ def build_unit_track(track, screen):
 
         grid.append([
             [
-                UnitTile((x, y))
-                for x in range(rectangle[0], rectangle[2], UnitTile.size[0])
+                objects.UnitTile((x, y))
+                for x in range(rectangle[0], rectangle[2], objects.UnitTile.size[0])
             ]
-            for y in range(rectangle[1], rectangle[3], UnitTile.size[1])
+            for y in range(rectangle[1], rectangle[3], objects.UnitTile.size[1])
         ])
 
     for l1 in grid:

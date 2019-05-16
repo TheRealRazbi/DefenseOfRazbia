@@ -1,4 +1,6 @@
 import pygame
+import functions
+import math
 
 
 class Entity:
@@ -14,11 +16,56 @@ class Entity:
 
 
 class Unit(Entity):
+    def __init__(self, start_position, map_name):
+        super().__init__()
+        self.start_position = start_position
+        self.path = functions.load_path(map_name)
+        self.x = self.path[0][0]
+        self.y = self.path[0][1]
+        self.path_pos = 0
+        self.move_count = 0
+        self.move_dis = 0
+        self.dis = 0
+        self.img = ''
+
+    def move(self):
+        x1, y1 = self.path[self.path_pos]
+        if self.path_pos + 1 >= len(self.path):
+            x2, y2 = 810, 396
+        else:
+            x2, y2 = self.path[self.path_pos+1]
+
+        move_dis = math.sqrt((x2-x1)**2 + (y2-y1)**2)
+
+
+        self.move_count += 1
+        dirn = (x2 - x1, y2 - y1)
+
+        move_x, move_y = (self.x + dirn[0] * self.move_count, self.y + dirn[1] * self.move_count)
+        self.dis += math.sqrt((move_x-x1)**2 + (move_y-y1)**2)
+
+        # Go to the next point
+        if self.dis >= move_dis:
+            self.dis = 0
+            self.move_count = 0
+            self.path_pos += 1
+            if self.path_pos >= len(self.path):
+                return False
+
+        self.x = move_x
+        self.y = move_y
+        return True
+
+    def draw(self, screen):
+        screen.blit(self.img, (self.x, self.y))
+
+
+class Ally(Unit):
     pass
 
 
-
-
+class Enemy(Unit):
+    pass
 
 
 class BaseTile:

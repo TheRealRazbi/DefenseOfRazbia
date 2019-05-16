@@ -1,15 +1,19 @@
-import pygame
-from functions import load_track, scale_size
+import functions
 from game import Game
-
+import pygame
 
 if __name__ == '__main__':
     size = width, height = 800, 600
     track_used = "default_map"
 
-    tower = pygame.image.load("lib/images/towerconcept1.png")
-    # tower_rect = tower.get_rect()
-    # screen.blit(tower, (tower_rect[0]+50, tower_rect[1]+500, tower_rect[2]+50, tower_rect[3]+50))
+    functions.load_path(also_print=True)
+
+
+
+
+    unit = pygame.image.load("lib/images/unit1.png")
+    unit_rect = unit.get_rect()
+    # screen.blit(unit, unit_rect)
 
     g = Game(size, track_used)
     g.run()
