@@ -1,4 +1,24 @@
 import pygame
+import sys
+import pygame
+
+
+class Game:
+    def __init__(self, size: tuple):
+        pygame.init()
+        self.width = size[0]
+        self.height = size[1]
+        self.towers = []
+        self.units = []
+
+
+    def run(self):
+        run = True
+
+        while run:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT: sys.exit()
+            pygame.display.flip()
 
 
 class Entity:
@@ -14,7 +34,7 @@ class Entity:
 
 
 class BaseTile:
-
+    tiles = 0
     size = 10, 10
 
     def __init__(self, position: tuple):
@@ -30,6 +50,7 @@ class BaseTile:
         self._position = position
         self._image_name = 'basetile.png'
         self._image_dir = 'lib/images/'
+        BaseTile.tiles += 1
 
     @property
     def area(self):

@@ -30,7 +30,15 @@ def scale_size(size, coordinates, debug=False):
     return result
 
 
-def create_track(list_of_coordionates, name):
+def create_track(lines, name):
+
+
+
+
+    save_track(lines, name)
+
+
+def save_track(list_of_coordionates, name):
     with open(f'lib/tracks/{name}.txt', 'wb') as f:
         pickle.dump(list_of_coordionates, f)
 
