@@ -22,50 +22,83 @@ class Unit(Entity):
         self.path = functions.load_path(map_name)
         self.x = self.path[0][0]
         self.y = self.path[0][1]
-        self.path_pos = 0
-        self.move_count = 0
-        self.move_dis = 0
-        self.dis = 0
+        self.move_point = 0
+        self.lerp_value = 0
+        self.movement_speed = 1
         self.img = ''
+        self.angle_change = 0
+        self.custom_hit_box = [0, 0]
+        self.rect = (0, 0)
+        self._facing = 's'
+
+    def scale_img(self):
+        self.img = pygame.transform.scale(self.img, (50, 50))
+
+    @property
+    def hit_box(self):
+        return self.centred[0], self.centred[1],\
+                self.centred[0]+self.custom_hit_box[0],\
+                self.centred[1]+self.custom_hit_box[1]
+
+    @property
+    def facing(self):
+        return self._facing
+
+
+
+    @property
+    def angle_change(self):
+        return self._angle
+
+    @angle_change.setter
+    def angle_change(self, angle):
+        self._angle = angle
 
     def move(self):
-        x1, y1 = self.path[self.path_pos]
-        if self.path_pos + 1 >= len(self.path):
-            x2, y2 = 810, 396
-        else:
-            x2, y2 = self.path[self.path_pos+1]
+        x1, y1 = self.x, self.y
+        x2, y2 = self.path[self.move_point+1]
+        x, y = x2-x1, y2-y1
+        if 0 < y < x:
+            self.facing = 's'
 
-        move_dis = math.sqrt((x2-x1)**2 + (y2-y1)**2)
+        direction = 0
 
-
-        self.move_count += 1
-        dirn = (x2 - x1, y2 - y1)
-
-        move_x, move_y = (self.x + dirn[0] * self.move_count, self.y + dirn[1] * self.move_count)
-        self.dis += math.sqrt((move_x-x1)**2 + (move_y-y1)**2)
-
-        # Go to the next point
-        if self.dis >= move_dis:
-            self.dis = 0
-            self.move_count = 0
-            self.path_pos += 1
-            if self.path_pos >= len(self.path):
-                return False
-
-        self.x = move_x
-        self.y = move_y
-        return True
 
     def draw(self, screen):
-        screen.blit(self.img, (self.x, self.y))
+        self.img = pygame.transform.rotate(self.img, self.angle_change)
+        self.angle_change = 0
+        screen.blit(self.img, (self.hit_box[0], self.hit_box[1]))
+
+    @property
+    def centred(self):
+        return self.x-self.custom_hit_box[0]/2, self.y-self.custom_hit_box[1]/2
+
+    @facing.setter
+    def facing(self, direction: str):
+        directions = {'n': 0, 'e': 90, 's': 180, 'w': 270}
+        self.angle_change = directions[direction] - directions[self.facing]
+        if self.angle_change > 180:
+            self.angle_change -= 360
+        if self.angle_change < -180:
+            self.angle_change += 360
 
 
 class Ally(Unit):
-    pass
+    def __init__(self, start_position, map_name):
+        super().__init__(start_position, map_name)
+        self.angle_change = -90
 
 
 class Enemy(Unit):
     pass
+
+
+class Footman(Ally):
+    def __init__(self, start_position, map_name):
+        super().__init__(start_position, map_name)
+        self.img = pygame.image.load('lib/images/footman.png')
+        self.custom_hit_box = 50, 30  # for scale 50, 50
+        self.scale_img()
 
 
 class BaseTile:

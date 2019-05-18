@@ -6,10 +6,8 @@ if __name__ == '__main__':
     size = width, height = 800, 600
     track_used = "default_map"
 
-    functions.load_path(also_print=True)
 
-
-
+    path = functions.load_path(also_print=True)
 
     unit = pygame.image.load("lib/images/unit1.png")
     unit_rect = unit.get_rect()

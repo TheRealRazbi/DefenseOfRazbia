@@ -39,6 +39,7 @@ def scale_size(size, coordinates, debug=False):
     return result
 
 
+
 def create_path(path, name):
     with open(f"lib/tracks/{name}/path.txt", "wb") as f:
         pickle.dump(path, f)
