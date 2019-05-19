@@ -6,9 +6,25 @@ if __name__ == '__main__':
     size = width, height = 800, 600
     track_used = "default_map"
 
-    functions.load_path(also_print=True)
+    path = functions.load_path(also_print=True)
+    path[5] = (706, 303)
+    path[7] = (607, 217)
+    path[8] = (511, 217)
+    path[9] = (511, 302)
+    path[10] = (414, 302)
+    path[11] = (414, 218)
+    path[12] = (315, 218)
+    path[13] = (315, 392)
+    path[14] = (192, 392)
+    path[15] = (192, 279)
+    path[16] = (86, 279)
+    path[17] = (86, 484)
+    path[18] = (435, 484)
+    path[19] = (435, 400)
+    path[20] = (820, 400)
 
 
+    # functions.create_path(path, 'default_map')
 
 
     unit = pygame.image.load("lib/images/unit1.png")

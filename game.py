@@ -35,7 +35,7 @@ class Game:
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pass
-                
+
             self._build_track()
             self.f1.move()
             self.f1.draw(self.screen)

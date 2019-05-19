@@ -31,6 +31,8 @@ class Unit(Entity):
         self.custom_hit_box = [0, 0]
         self.rect = (0, 0)
         self._facing = 'e'
+        self.choose_facing = True
+
 
     def scale_img(self):
         self.img = pygame.transform.scale(self.img, (50, 50))
@@ -54,27 +56,26 @@ class Unit(Entity):
         self._angle = angle
 
     def _change_direction(self, start, end):
-        if abs(start[0]-end[0]) > abs(start[1]-end[1]):
-            print((start[0]) - (end[0]), (start[1]) - (end[1]))
-
-            if start[0] > end[0]:
-                self.facing = 'w'
-                print(f'move {self.facing} because {start[0]}>{end[0]}')
-            elif start[0] < end[0]:
-                self.facing = 'e'
-                print(f'move {self.facing} because {start[0]}<{end[0]}')
-        elif abs(start[1]-end[1]) > abs(start[0]-end[0]):
+        if start[0] == end[0]:
+            print(f'[0]{start[0]} equals to {end[0]}')
             if start[1] > end[1]:
                 self.facing = 's'
-                print(f'move {self.facing} because {start[1]}>{end[1]}')
             elif start[1] < end[1]:
                 self.facing = 'n'
-                print(f'move {self.facing} because nothing else worked')
+        elif start[1] == end[1]:
+            print(f'[1]{start[1]} equals to {end[1]}')
+            if start[0] > end[0]:
+                self.facing = 'w'
+            elif start[0] < end[0]:
+                self.facing = 'e'
+
 
     def move(self):
         start = pygame.math.Vector2(self.path[self.move_point])
         end = pygame.math.Vector2(self.path[self.move_point+1])
-
+        if self.choose_facing:
+            self._change_direction(start, end)
+            self.choose_facing = False
         if self.lerp_value == 0:
             self._change_direction(start, end)
 
@@ -85,7 +86,7 @@ class Unit(Entity):
 
         self.x, self.y = start.lerp(end, self.lerp_value)
 
-        print(f'facing is {self.facing}, x and y are {self.x, self.y}, lerp is {self.lerp_value}')
+        # print(f'facing is {self.facing}, x and y are {self.x, self.y}, lerp is {self.lerp_value}')
 
         if corner:
             self.lerp_value = 0
@@ -109,6 +110,8 @@ class Unit(Entity):
         if self.angle_change < -180:
             self.angle_change += 360
 
+        self.img = pygame.transform.rotate(self.img, self.angle_change)
+        self.angle_change = 0
         self._facing = direction
 
 

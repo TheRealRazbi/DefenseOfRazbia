@@ -56,6 +56,7 @@ def load_path(name='default_map', also_print=False):
     return res
 
 
+
 def build_base_track(size, screen):
     grid = [
         [
