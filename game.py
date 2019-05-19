@@ -38,12 +38,12 @@ class Game:
                     print(pos)
 
             self._build_track()
-            self.f1.draw(self.screen)
             self.f1.move()
+            self.f1.draw(self.screen)
             pygame.display.flip()
 
     def _spawn_footman(self):
-        self.f1 = objects.Footman((0, 0), 'default_map')
+        self.f1 = objects.Footman('default_map')
         self.f1.draw(self.screen)
 
     def _select_track(self, map_name: str=''):
