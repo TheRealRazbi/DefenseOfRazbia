@@ -7,6 +7,9 @@ if __name__ == '__main__':
     track_used = "default_map"
 
     path = functions.load_path(also_print=True)
+
+    path[3] = (205, 90)
+    path[4] = (706, 90)
     path[5] = (706, 303)
     path[7] = (607, 217)
     path[8] = (511, 217)
@@ -20,8 +23,8 @@ if __name__ == '__main__':
     path[16] = (86, 279)
     path[17] = (86, 484)
     path[18] = (435, 484)
-    path[19] = (435, 400)
-    path[20] = (820, 400)
+    path[19] = (435, 390)
+    path[20] = (820, 390)
 
 
     # functions.create_path(path, 'default_map')

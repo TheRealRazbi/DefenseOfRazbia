@@ -24,7 +24,6 @@ class Unit(Entity):
         self.prev_x = self.x
         self.prev_y = self.y
         self.move_point = 0
-        self.lerp_value = 0
         self.movement_speed = 1
         self.img = ''
         self.angle_change = 0
@@ -32,7 +31,7 @@ class Unit(Entity):
         self.rect = (0, 0)
         self._facing = 'e'
         self.choose_facing = True
-
+        self.moveable = True
 
     def scale_img(self):
         self.img = pygame.transform.scale(self.img, (50, 50))
@@ -71,28 +70,60 @@ class Unit(Entity):
 
 
     def move(self):
-        start = pygame.math.Vector2(self.path[self.move_point])
-        end = pygame.math.Vector2(self.path[self.move_point+1])
-        if self.choose_facing:
-            self._change_direction(start, end)
-            self.choose_facing = False
-        if self.lerp_value == 0:
-            self._change_direction(start, end)
+        if self.moveable:
+            start = self.path[self.move_point]
+            end = self.path[self.move_point+1]
 
-        corner = False
-        if self.lerp_value > 1:
-            self.lerp_value = 1
-            corner = True
+            corner = False
 
-        self.x, self.y = start.lerp(end, self.lerp_value)
+            moving = self.movement_speed
+            if self.choose_facing:
+                self._change_direction(start, end)
+                self.choose_facing = False
 
-        # print(f'facing is {self.facing}, x and y are {self.x, self.y}, lerp is {self.lerp_value}')
+            if start[0] == end[0]:
+                if start[1] > end[1]:
+                    if self.y - moving <= end[1]:
+                        moving = end[1] - self.y
+                        corner = True
+                    self.y -= moving
 
-        if corner:
-            self.lerp_value = 0
-            self.move_point += 1
-        else:
-            self.lerp_value += 0.02
+                elif start[1] < end[1]:
+                    if self.y + moving >= end[1]:
+                        moving = end[1] - self.y
+                        corner = True
+
+                    self.y += moving
+
+            elif start[1] == end[1]:
+                if start[0] > end[0]:
+                    if self.x - moving <= end[0]:
+                        moving = end[0] - self.x
+                        corner = True
+
+
+                    self.x -= moving
+
+                elif start[0] < end[0]:
+                    if self.x + moving >= end[0]:
+                        moving = end[0] - self.x
+                        corner = True
+
+                    self.x += moving
+
+            try:
+                if corner:
+                    self.move_point += 1
+                    start = self.path[self.move_point]
+                    end = self.path[self.move_point + 1]
+                    self._change_direction(start, end)
+            except IndexError as e:
+                self.moveable = False
+                self.tp_to_arena()
+
+
+    def tp_to_arena(self):
+        pass
 
     def draw(self, screen):
         screen.blit(self.img, (self.hit_box[0], self.hit_box[1]))
@@ -119,6 +150,8 @@ class Ally(Unit):
     def __init__(self, map_name):
         super().__init__(map_name)
 
+    def tp_to_arena(self):
+        pass
 
 class Enemy(Unit):
     pass
