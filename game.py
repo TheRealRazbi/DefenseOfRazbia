@@ -1,6 +1,7 @@
 import functions
 import objects
 import pygame
+import objects
 import sys
 
 
@@ -22,11 +23,9 @@ class Game:
         self._build_track()
         self._spawn_footman()
 
-        # unit = pygame.transform.scale(pygame.image.load("lib/images/unit1.png"), (25, 25))
-        # unit_rect = unit.get_rect()
-        # self.screen.blit(unit, unit_rect)
 
         while run:
+
             clock.tick(60)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: sys.exit()
@@ -36,6 +35,11 @@ class Game:
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     print(pos)
+                    pass
+
+            self._build_track()
+            self.f1.move()
+            self.f1.draw(self.screen)
 
             self._build_track()
             self.f1.move()
@@ -44,7 +48,7 @@ class Game:
 
     def _spawn_footman(self):
         self.f1 = objects.Footman('default_map')
-        self.f1.draw(self.screen)
+        # self.f1.draw(self.screen)
 
     def _select_track(self, map_name: str=''):
         if map_name == '':
