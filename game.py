@@ -41,9 +41,6 @@ class Game:
             self.f1.move()
             self.f1.draw(self.screen)
 
-            self._build_track()
-            self.f1.move()
-            self.f1.draw(self.screen)
             pygame.display.flip()
 
     def _spawn_footman(self):

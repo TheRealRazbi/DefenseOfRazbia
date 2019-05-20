@@ -8,6 +8,9 @@ if __name__ == '__main__':
 
     path = functions.load_path(also_print=True)
 
+    path[0] = (85, 2)
+    path[1] = (85, 184)
+    path[2] = path[2]
     path[3] = (205, 90)
     path[4] = (706, 90)
     path[5] = (706, 303)

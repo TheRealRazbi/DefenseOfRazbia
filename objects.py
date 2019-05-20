@@ -30,6 +30,8 @@ class Unit(Entity):
         self.custom_hit_box = [0, 0]
         self.rect = (0, 0)
         self._facing = 'e'
+        self.moveable = True
+        self.choose_facing = True
 
     def scale_img(self):
         self.img = pygame.transform.scale(self.img, (50, 50))
@@ -51,6 +53,7 @@ class Unit(Entity):
     @angle_change.setter
     def angle_change(self, angle):
         self._angle = angle
+
 
 
 
@@ -122,8 +125,10 @@ class Unit(Entity):
                     end = self.path[self.move_point + 1]
                     self._change_direction(start, end)
             except IndexError as e:
+                print(e)
                 self.moveable = False
                 self.tp_to_arena()
+
 
     def tp_to_arena(self):
         pass
@@ -146,7 +151,9 @@ class Unit(Entity):
 
         self.img = pygame.transform.rotate(self.img, self.angle_change)
         self.angle_change = 0
+
         self._facing = direction
+
 
 
 class Ally(Unit):
