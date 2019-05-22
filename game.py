@@ -11,7 +11,7 @@ class Game:
         self.width = size[0]
         self.height = size[1]
         self.towers = []
-        self.units = []
+        self.units = pygame.sprite.Group()
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.map_name = map_name
 
@@ -22,7 +22,6 @@ class Game:
         self._select_track(map_name=self.map_name)
         self._build_track()
         self._spawn_footman()
-
 
         while run:
 
@@ -40,12 +39,14 @@ class Game:
             self._build_track()
             self.f1.move()
             self.f1.draw(self.screen)
+            # print(self.f1.alive())
+            # self.f1.update()
 
             pygame.display.flip()
 
     def _spawn_footman(self):
         self.f1 = objects.Footman('default_map')
-        # self.f1.draw(self.screen)
+        self.f1.add(self.units)
 
     def _select_track(self, map_name: str=''):
         if map_name == '':

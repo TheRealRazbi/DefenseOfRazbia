@@ -46,7 +46,7 @@ def create_path(path, name):
 
 
 def load_track(name='default_map'):
-    return pygame.image.load(f'lib/tracks/{name}/{name}.png')
+    return pygame.image.load(f'lib/tracks/{name}/{name}.png').convert()
 
 
 def load_path(name='default_map', also_print=False):
@@ -58,46 +58,3 @@ def load_path(name='default_map', also_print=False):
 
 
 
-def build_base_track(size, screen):
-    grid = [
-        [
-            objects.BaseTile((x, y))
-            for x in range(0, size[0], objects.BaseTile.size[0])
-        ]
-        for y in range(0, size[1], objects.BaseTile.size[1])
-    ]
-
-    for tile in grid:
-        for actual_tile in tile:
-
-            screen.blit(actual_tile.image, (actual_tile.position[0],
-                                            actual_tile.position[1],
-                                            actual_tile.position[0]+actual_tile.size[0],
-                                            actual_tile.position[1]+actual_tile.size[1]))
-
-
-def build_unit_track(track, screen):
-    grid = []
-    for rectangle in track:
-        if rectangle[0] > rectangle[2]:
-            rectangle[0], rectangle[2] = rectangle[2], rectangle[0]
-        if rectangle[1] > rectangle[3]:
-            rectangle[1], rectangle[3] = rectangle[3], rectangle[1]
-
-        grid.append([
-            [
-                objects.UnitTile((x, y))
-                for x in range(rectangle[0], rectangle[2], objects.UnitTile.size[0])
-            ]
-            for y in range(rectangle[1], rectangle[3], objects.UnitTile.size[1])
-        ])
-
-    for l1 in grid:
-        for l2 in l1:
-            for tile in l2:
-                top_x, top_y, bottom_x, bottom_y = tile.area
-
-                screen.blit(tile.image, (top_x,
-                                         top_y,
-                                         bottom_x+top_x,
-                                         bottom_y+top_y))

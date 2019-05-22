@@ -3,10 +3,25 @@ import functions
 import time
 
 
-class Entity:
+class UnitGroup(pygame.sprite.Group):
+    def __init__(self, *args):
+        super().__init__(*args)
+
+
+
+
+
+
+
+
+
+
+
+class Entity(pygame.sprite.Sprite):
     entities = 0
 
     def __init__(self):
+        super().__init__()
         Entity.entities += 1
         self.position = 0, 0
 
@@ -24,7 +39,7 @@ class Unit(Entity):
         self.prev_x = self.x
         self.prev_y = self.y
         self.move_point = 0
-        self.movement_speed = 1
+        self.movement_speed = 2
         self.img = ''
         self.angle_change = 0
         self.custom_hit_box = [0, 0]
@@ -63,13 +78,13 @@ class Unit(Entity):
 
     def _change_direction(self, start, end):
         if start[0] == end[0]:
-            print(f'[0]{start[0]} equals to {end[0]}')
+            # print(f'[0]{start[0]} equals to {end[0]}')
             if start[1] > end[1]:
                 self.facing = 's'
             elif start[1] < end[1]:
                 self.facing = 'n'
         elif start[1] == end[1]:
-            print(f'[1]{start[1]} equals to {end[1]}')
+            # print(f'[1]{start[1]} equals to {end[1]}')
             if start[0] > end[0]:
                 self.facing = 'w'
             elif start[0] < end[0]:
@@ -175,69 +190,47 @@ class Footman(Ally):
         self.scale_img()
 
 
-class BaseTile:
-    tiles = 0
-    size = 10, 10
+class Tower:
+    tower_size = 0, 0
+    towers = []
 
-    def __init__(self, position: tuple):
-        if len(position) != 2:
-            raise ValueError("A number other than 2 was used to create a tile ")
-        if position[0] < 0 or position[1] < 0:
-            raise ValueError(f"Invalid coordonates . Coordonates used {position}")
-        try:
-            position = tuple(position)
-        except Exception as e:
-            print("Can't convert to tuple", e)
-
-        self._position = position
-        self._image_name = 'basetile.png'
-        self._image_dir = 'lib/images/'
-        BaseTile.tiles += 1
-
-    @property
-    def area(self):
-        return self._position[0], self._position[1],\
-                self._position[0]+BaseTile.size[0],  self._position[1]+BaseTile.size[1]
-
-    @property
-    def position(self):
-        return self._position
-
-    @property
-    def image(self):
-        return pygame.image.load(self._image_dir + self._image_name)
-
-    def is_inside(self, coordinates: tuple):
-        if self.area[0] <= coordinates[0] <= self.area[2] or self.area[1] >= coordinates[1] >= self.area[3]:
-            return True
-        return False
+    def __init__(self, location: tuple):
+        self.x = location[0]
+        self.y = location[1]
+        self.custom_hit_box = self.x, self.y, self.x + 0, self.y + 0
+        self.damage = 0
+        self.range = 0
+        self.img = ''
+        self.cost = 0
+        Tower.towers.append([self])
 
 
-class UnitTile(BaseTile):
+class HealingTower(Tower):
+    def __init__(self, location: tuple):
+        super().__init__(location)
+        self.img = 'lib/images/healing_tower.png'
+        self.cost = 10
+        self.range = 5
 
-    def __init__(self, position):
-        super().__init__(position)
-        self._image_name = 'unittile.png'
+
+class Button:
+    def __init__(self, location: tuple):
+        self.x = location[0]
+        self.y = location[1]
+        self.custom_hit_box = self.x, self.y, self.x + 0, self.y + 0
 
 
-class TowerTile(BaseTile):
 
-    def __init__(self, position):
-        super().__init__(position)
-        self._image = 'towertile.png'
+class BuildMenu:
+    def __init__(self):
+        pass
+
+
+
 
 
 if __name__ == '__main__':
     pass
-
-
-
-
-
-
-
-
-
 
 
 
