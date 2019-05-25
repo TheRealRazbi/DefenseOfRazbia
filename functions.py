@@ -49,12 +49,26 @@ def load_track(name='default_map'):
     return pygame.image.load(f'lib/tracks/{name}/{name}.png').convert()
 
 
-def load_path(name='default_map', also_print=False):
+def load_path(name='default_map', also_print=False, scaling=(800, 600)):
     with open(f'lib/tracks/{name}/path.txt', 'rb') as f:
         res = pickle.load(f)
+    ratio = (scaling[0] / 800), (scaling[1] / 600)
+    new_res = []
+    for paths in res:
+        temp = []
+        for index, value in enumerate(paths):
+            if index % 2:
+                value = value * ratio[1]
+            else:
+                value = value * ratio[0]
+            temp.append(float(value))
+        new_res.append(temp)
+
     if also_print:
-        print(res)
-    return res
+        print(new_res)
+
+
+    return new_res
 
 
 

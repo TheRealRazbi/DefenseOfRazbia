@@ -1,13 +1,19 @@
 import pygame
 import functions
-import time
+import time, math
 
 
 class UnitGroup(pygame.sprite.Group):
     def __init__(self, *args):
         super().__init__(*args)
 
+    def move(self):
+        for sprite in self.sprites():
+            sprite.move()
 
+    def draw(self, screen):
+        for sprite in self.sprites():
+            sprite.draw(screen)
 
 
 
@@ -31,15 +37,17 @@ class Entity(pygame.sprite.Sprite):
 
 
 class Unit(Entity):
-    def __init__(self, map_name):
+    def __init__(self, map_name, screen_size):
         super().__init__()
-        self.path = functions.load_path(map_name)
+        self.path = functions.load_path(map_name, scaling=screen_size)
         self.x = self.path[0][0]
         self.y = self.path[0][1]
+        self.x_ratio = screen_size[0] / 800
+        self.y_ratio = screen_size[1] / 600
         self.prev_x = self.x
         self.prev_y = self.y
         self.move_point = 0
-        self.movement_speed = 2
+        self.movement_speed = 2 * ((self.x_ratio + self.y_ratio)/2)
         self.img = ''
         self.angle_change = 0
         self.custom_hit_box = [0, 0]
@@ -48,8 +56,17 @@ class Unit(Entity):
         self.moveable = True
         self.choose_facing = True
 
+    def change_start_point(self, where: tuple):
+        self.path.insert(0, (where[0], where[1]))
+        self.x = self.path[0][0]
+        self.y = self.path[0][1]
+        self.move_point = 0
+
+
+
     def scale_img(self):
-        self.img = pygame.transform.scale(self.img, (50, 50))
+        size = int(50 * self.x_ratio), int(50 * self.y_ratio)
+        self.img = pygame.transform.scale(self.img, size)
 
     @property
     def hit_box(self):
@@ -68,7 +85,6 @@ class Unit(Entity):
     @angle_change.setter
     def angle_change(self, angle):
         self._angle = angle
-
 
 
 
@@ -140,13 +156,14 @@ class Unit(Entity):
                     end = self.path[self.move_point + 1]
                     self._change_direction(start, end)
             except IndexError as e:
-                print(e)
+                # print(e)
+                # print('REE1')
                 self.moveable = False
                 self.tp_to_arena()
 
 
     def tp_to_arena(self):
-        pass
+        self.kill()
 
     def draw(self, screen):
         screen.blit(self.img, (self.hit_box[0], self.hit_box[1]))
@@ -172,46 +189,86 @@ class Unit(Entity):
 
 
 class Ally(Unit):
-    def __init__(self, map_name):
-        super().__init__(map_name)
+    def __init__(self, map_name, screen_size):
+        super().__init__(map_name, screen_size)
 
-    def tp_to_arena(self):
-        pass
+    # def tp_to_arena(self):
+    #     pass
 
 class Enemy(Unit):
     pass
 
 
 class Footman(Ally):
-    def __init__(self, map_name):
-        super().__init__(map_name)
+    def __init__(self, map_name, screen_size):
+        super().__init__(map_name, screen_size)
         self.img = pygame.image.load('lib/images/footman.png')
         self.custom_hit_box = 50, 30  # for scale 50, 50
         self.scale_img()
 
 
-class Tower:
+class Tower(pygame.sprite.Sprite):
     tower_size = 0, 0
     towers = []
 
     def __init__(self, location: tuple):
+        super().__init__()
         self.x = location[0]
         self.y = location[1]
-        self.custom_hit_box = self.x, self.y, self.x + 0, self.y + 0
+        self.custom_hit_box = [0, 0]
         self.damage = 0
         self.range = 0
         self.img = ''
         self.cost = 0
-        Tower.towers.append([self])
+
+    def check_for_units(self, group):
+        for unit in group:
+            distance = math.sqrt((unit.x - self.middle[0])**2 + (unit.y + self.middle[1])**2)
+
+            if distance < self.range + (self.custom_hit_box[0] + self.custom_hit_box[1])/2:
+                print(f'{unit} is inside the tower range')
+                pass
+            else:
+                print(f'{unit} with coordonates {unit.centred[0]} {unit.centred[1]} and distance {int(distance)}')
+
+            # print(distance)
+            pass
+
+    def draw(self, screen):
+        # screen.blit(self.img, (self.hit_box[0], self.hit_box[1]))
+        screen.blit(self.img, (self.x, self.y))
+
+    @property
+    def hit_box(self):
+        return self.centred[0], self.centred[1],\
+                self.centred[0]+self.custom_hit_box[0],\
+                self.centred[1]+self.custom_hit_box[1]
+
+    @property
+    def centred(self):
+        return self.x-self.custom_hit_box[0]/2, self.y-self.custom_hit_box[1]/2
+
+    def scale_img(self):
+        self.img = pygame.transform.scale(self.img, (50, 50))
+        self.x = self.x
+        self.y = self.y
+
+    @property
+    def middle(self):
+        return self.x + self.custom_hit_box[0]/2, self.y + self.custom_hit_box[1]/2
 
 
 class HealingTower(Tower):
     def __init__(self, location: tuple):
         super().__init__(location)
-        self.img = 'lib/images/healing_tower.png'
+        self.img = pygame.image.load('lib/images/healing_tower.png')
         self.cost = 10
-        self.range = 5
+        self.range = 100
+        self.custom_hit_box = [50, 50]
 
+        print(self.middle)
+        self.scale_img()
+        print(self.middle)
 
 class Button:
     def __init__(self, location: tuple):
