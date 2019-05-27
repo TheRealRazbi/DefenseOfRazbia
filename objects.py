@@ -12,6 +12,9 @@ class ProjectileGroup(pygame.sprite.Group):
             sprite.draw(screen)
 
 
+
+
+
 class UnitGroup(pygame.sprite.Group):
     def __init__(self, *args):
         super().__init__(*args)
@@ -185,7 +188,14 @@ class Unit(Entity):
         self.kill()
 
     def draw(self, screen):
+        hp_percent = (30 * (self.hp / self.max_hp)) - 15
         screen.blit(self.img, (self.hit_box[0], self.hit_box[1]))
+        pygame.draw.line(screen, (255, 255, 255), (self.x-15, self.centred[1]+self.custom_hit_box[1]+30),
+                                            (self.x+15, self.centred[1]+self.custom_hit_box[1]+30), 5)
+
+        pygame.draw.line(screen, (0, 255, 0), (self.x-15, self.centred[1]+self.custom_hit_box[1]+30),
+                                            (self.x+hp_percent, self.centred[1]+self.custom_hit_box[1]+30), 5)
+
         print(self.hp)
 
     @property
@@ -301,7 +311,7 @@ class HealingTower(Tower):
         self.cost = 10
         self.range = 175
         self.custom_hit_box = [50, 50]
-        self.power = 2
+        self.power = 25
 
         # print(self.middle)
         self.scale_img()
