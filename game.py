@@ -55,7 +55,7 @@ class Game:
 
     def _spawn_footman(self):
         indent = 0
-        for i in range(1):
+        for i in range(10):
             footman = objects.Footman('default_map', screen_size=(self.width, self.height))
             footman.change_start_point((footman.path[0][0], -indent))
             footman.add(self.units)

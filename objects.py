@@ -196,7 +196,7 @@ class Unit(Entity):
         pygame.draw.line(screen, (0, 255, 0), (self.x-15, self.centred[1]+self.custom_hit_box[1]+30),
                                             (self.x+hp_percent, self.centred[1]+self.custom_hit_box[1]+30), 5)
 
-        print(self.hp)
+        # print(self.hp)
 
     @property
     def centred(self):
@@ -255,6 +255,7 @@ class Tower(pygame.sprite.Sprite):
         self.selected = True
         self.cooldown = 0
         self.projectile_group = pygame.sprite.Group()
+        self.projectile = ''
 
     def check_for_units(self, group):
         if self.selected:
@@ -267,11 +268,17 @@ class Tower(pygame.sprite.Sprite):
                 # print(f'{unit} is inside the tower range')
                 if self.cooldown <= 0:
                     self.cooldown = 40
-                    projectile = HealingShot(self.middle, unit, self.power)
-                    self.projectile_group.add(projectile)
+                    if self.projectile == HealingShot and unit.hp == unit.max_hp:
+                        pass
+                    else:
+                        projectile = self.projectile(self.middle, unit, self.power)
+                        self.projectile_group.add(projectile)
+                        print(f"SHOT {unit}")
+                        break
                 else:
                     self.cooldown -= 1
-                    print('reloading')
+                    break
+                    # print('reloading')
                 pass
             else:
                 # print(f'{unit} with coordonates {unit.centred[0]} {unit.centred[1]} and distance {int(distance)}'
@@ -311,8 +318,8 @@ class HealingTower(Tower):
         self.cost = 10
         self.range = 175
         self.custom_hit_box = [50, 50]
-        self.power = 25
-
+        self.power = 5
+        self.projectile = HealingShot
         # print(self.middle)
         self.scale_img()
         # print(self.middle)
@@ -332,8 +339,6 @@ class Projectile(pygame.sprite.Sprite):
         self.type = None
 
     def update(self):
-        # x = abs(self.x - self.target.x)
-        # y = abs(self.y - self.target.y)
         if self.target.hit_box[0] <= self.x <= self.target.hit_box[2] and\
             self.target.hit_box[1] <= self.y <= self.target.hit_box[3]:
             self.target.hit(self.type, self.power)
@@ -349,10 +354,6 @@ class Projectile(pygame.sprite.Sprite):
         else:
             self.y -= self.speed
 
-        # if x > y:
-        #     self.facing = 'e'
-        # else:
-        #     self.facing = 's'
 
     def draw(self, screen):
         screen.blit(self.img, (self.x, self.y))
