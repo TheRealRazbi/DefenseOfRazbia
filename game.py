@@ -15,7 +15,7 @@ class Game:
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.map_name = map_name
         self._select_track()
-
+        self.projectiles = objects.ProjectileGroup()
 
     def run(self):
         run = True
@@ -44,6 +44,11 @@ class Game:
             self.t1.draw(self.screen)
 
             self.t1.check_for_units(self.units)
+            for projectile in self.t1.projectile_group:
+                self.projectiles.add(projectile)
+            self.t1.projectile_group.empty()
+            self.projectiles.update()
+            self.projectiles.draw(self.screen)
             # print(self.units)
 
             pygame.display.flip()
