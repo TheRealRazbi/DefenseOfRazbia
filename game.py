@@ -42,8 +42,7 @@ class Game:
             self.units.move()
             self.units.draw(self.screen)
             self.t1.draw(self.screen)
-            pygame.draw.circle(self.screen, (0, 0, 0), (int(self.t1.middle[0]), int(self.t1.middle[1])),
-                               self.t1.range, 5)
+
             self.t1.check_for_units(self.units)
             # print(self.units)
 
@@ -58,7 +57,7 @@ class Game:
             indent += 150
 
     def _place_tower(self):
-        self.t1 = objects.HealingTower((250, 250))
+        self.t1 = objects.HealingTower((250, 250), self.screen)
 
 
     def _select_track(self):

@@ -211,7 +211,7 @@ class Tower(pygame.sprite.Sprite):
     tower_size = 0, 0
     towers = []
 
-    def __init__(self, location: tuple):
+    def __init__(self, location: tuple, target_screen=None):
         super().__init__()
         self.x = location[0]
         self.y = location[1]
@@ -220,17 +220,30 @@ class Tower(pygame.sprite.Sprite):
         self.range = 0
         self.img = ''
         self.cost = 0
+        self.target_screen = target_screen
+        self.selected = True
+        self.cooldown = 0
 
     def check_for_units(self, group):
+        if self.selected:
+            pygame.draw.circle(self.target_screen, (0, 0, 0), (int(self.middle[0]), int(self.middle[1])),
+                               self.range, 5)
         for unit in group:
-            distance = math.sqrt((unit.x - self.middle[0])**2 + (unit.y + self.middle[1])**2)
+            distance = math.sqrt(abs(unit.x - self.middle[0])**2 + abs(unit.y - self.middle[1])**2)
 
-            if distance < self.range + (self.custom_hit_box[0] + self.custom_hit_box[1])/2:
-                print(f'{unit} is inside the tower range')
+            if distance <= self.range:
+                # print(f'{unit} is inside the tower range')
+                if self.cooldown <= 0:
+                    self.cooldown = 40
+                    print('shoot')
+                else:
+                    self.cooldown -= 1
+                    print('reloading')
                 pass
             else:
-                print(f'{unit} with coordonates {unit.centred[0]} {unit.centred[1]} and distance {int(distance)}')
-
+                # print(f'{unit} with coordonates {unit.centred[0]} {unit.centred[1]} and distance {int(distance)}'
+                #       f' x_change = {unit.x - self.middle[0]} y_change = {unit.y + self.middle[1]}')
+                pass
             # print(distance)
             pass
 
@@ -259,16 +272,28 @@ class Tower(pygame.sprite.Sprite):
 
 
 class HealingTower(Tower):
-    def __init__(self, location: tuple):
-        super().__init__(location)
+    def __init__(self, location: tuple, target_screen=None):
+        super().__init__(location, target_screen=target_screen)
         self.img = pygame.image.load('lib/images/healing_tower.png')
         self.cost = 10
-        self.range = 100
+        self.range = 175
         self.custom_hit_box = [50, 50]
 
         print(self.middle)
         self.scale_img()
         print(self.middle)
+
+
+class Projectile:
+    def __init__(self, target):
+        pass
+
+
+class HealingShot(Projectile):
+    def __init__(self, target):
+        super().__init__(target)
+
+
 
 class Button:
     def __init__(self, location: tuple):
