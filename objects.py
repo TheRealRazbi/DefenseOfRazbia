@@ -418,10 +418,10 @@ class BuildMenu:
         self.screen_width, self.screen_height = screen_size
         self.custom_hit_box = 100, 300
         self.x, self.y = self.screen_width - self.custom_hit_box[0], self.screen_height/2 - self.custom_hit_box[1]/2
-
+        self.buttons = []
 
         self.img = pygame.image.load("lib/images/BasicMenu.png")
-        self.img = pygame.transform.scale(self.img, (100, 300))
+        # self.img = pygame.transform.scale(self.img, (100, 300))
 
     def check_for_handle(self):
         if self.handle.active:
@@ -430,20 +430,50 @@ class BuildMenu:
     def draw(self):
         if self.handle.active:
             self.screen.blit(self.img, (self.x, self.y))
+            for button in self.buttons:
+                button.draw()
 
     @property
     def hit_box(self):
         return self.x, self.y, self.x + self.custom_hit_box[0], self.y + self.custom_hit_box[1]
 
 
-class Encyclopedia:
-    def __init__(self):
-        pass
+    def slot(self, slot):
+        slots = []
+        for i in range(14):
+            if i % 2:
+                to_add = 58
+                temp = [self.x + to_add, self.y - 35 + (math.ceil(i / 2) * 47)]
+
+            else:
+                to_add = 10
+                temp = [self.x + to_add, self.y + 11 + (math.ceil(i / 2) * 47)]
+
+            slots.append(temp)
+        return slots[slot]
+
+    def add(self, button):
+        self.buttons.append(button)
+
+
+class BuildMenuButton:
+    def __init__(self, screen, build_menu: BuildMenu, slot: int):
+        self.build_menu = build_menu
+        self.screen = screen
+        self.x, self.y = build_menu.slot(slot)
+        self.img = ''
 
     def draw(self):
-        pass
+        self.screen.blit(self.img, (self.x, self.y))
 
+    def rescale(self):
+        self.img = pygame.transform.scale(self.img, (37, 37))
 
+class Encyclopedia(BuildMenuButton):
+    def __init__(self, screen, build_menu: BuildMenu, slot: int):
+        super().__init__(screen, build_menu, slot)
+        self.img = pygame.image.load('lib/images/encyclopedia.png')
+        self.rescale()
 
 if __name__ == '__main__':
     pass
