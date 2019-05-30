@@ -57,10 +57,11 @@ def load_path(name='default_map', also_print=False, scaling=(800, 600)):
     for paths in res:
         temp = []
         for index, value in enumerate(paths):
+
             if index % 2:
                 value = value * ratio[1]
             else:
-                value = value * ratio[0]
+                value = (value * ratio[0])
             temp.append(float(value))
         new_res.append(temp)
 

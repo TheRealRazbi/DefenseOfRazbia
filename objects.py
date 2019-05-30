@@ -273,7 +273,7 @@ class Tower(pygame.sprite.Sprite):
                     else:
                         projectile = self.projectile(self.middle, unit, self.power)
                         self.projectile_group.add(projectile)
-                        print(f"SHOT {unit}")
+                        # print(f"SHOT {unit}")
                         break
                 else:
                     self.cooldown -= 1
@@ -384,19 +384,64 @@ class HealingShot(Projectile):
         self.img = pygame.image.load('lib/images/healingshot.png')
         self.type = 'HEAL'
 
-class Button:
-    def __init__(self, location: tuple):
-        self.x = location[0]
-        self.y = location[1]
-        self.custom_hit_box = self.x, self.y, self.x + 0, self.y + 0
 
+class Handle:
+    def __init__(self, location):
+        self.active = False
+        self.custom_hit_box = 25, 50
+        self.x, self.y = location
+        self._handle = pygame.image.load("lib/images/handle.png")
+
+    def check(self, mouse_position):
+        if self.hit_box[0] <= mouse_position[0] <= self.hit_box[2] and\
+                self.hit_box[1] <= mouse_position[1] <= self.hit_box[3]:
+                    self.active = not self.active
+                    if self.active:
+                        self.x -= 100
+                    else:
+                        self.x += 100
+                    # print('CLICKED', self.active)
+
+    def draw(self, screen):
+        screen.blit(self._handle, (self.x, self.y))
+
+    @property
+    def hit_box(self):
+        return self.x, self.y, self.x + self.custom_hit_box[0], self.y + self.custom_hit_box[1]
 
 
 class BuildMenu:
+    def __init__(self, screen, screen_size: tuple, handle: Handle):
+        self.screen = screen
+        self.build_menu = False
+        self.handle = handle
+        self.screen_width, self.screen_height = screen_size
+        self.custom_hit_box = 100, 300
+        self.x, self.y = self.screen_width - self.custom_hit_box[0], self.screen_height/2 - self.custom_hit_box[1]/2
+
+
+        self.img = pygame.image.load("lib/images/BasicMenu.png")
+        self.img = pygame.transform.scale(self.img, (100, 300))
+
+    def check_for_handle(self):
+        if self.handle.active:
+            pass
+
+    def draw(self):
+        if self.handle.active:
+            self.screen.blit(self.img, (self.x, self.y))
+
+    @property
+    def hit_box(self):
+        return self.x, self.y, self.x + self.custom_hit_box[0], self.y + self.custom_hit_box[1]
+
+
+class Encyclopedia:
     def __init__(self):
         pass
 
-
+    def draw(self):
+        pass
 
 
 

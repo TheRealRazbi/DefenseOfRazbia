@@ -35,6 +35,7 @@ class Game:
                 pos = pygame.mouse.get_pos()
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
+                    self.handle.check(pos)
                     print(pos)
                     pass
 
@@ -49,12 +50,16 @@ class Game:
             self.t1.projectile_group.empty()
             self.projectiles.update()
             self.projectiles.draw(self.screen)
+
+            self.handle.draw(self.screen)
+            self.build_menu.draw()
             # print(self.units)
 
             pygame.display.flip()
 
     def _spawn_footman(self):
         indent = 0
+        # up_percent = int(100 * float(self.width / 600))
         for i in range(10):
             footman = objects.Footman('default_map', screen_size=(self.width, self.height))
             footman.change_start_point((footman.path[0][0], -indent))
@@ -65,15 +70,24 @@ class Game:
         self.t1 = objects.HealingTower((250, 250), self.screen)
 
 
+
+
     def _select_track(self):
         if self.map_name == '':
             raise ValueError("Track name not specified")
+        # up_percent = int(100 * float(self.width / 600))
 
         self.track = functions.load_track(name=self.map_name)
         self.track = pygame.transform.scale(self.track, (self.width, self.height))
+        self.handle = objects.Handle((self.width - 25, self.height/2 - 50))
+        self.build_menu = objects.BuildMenu(screen=self.screen, handle=self.handle,
+                                            screen_size=(self.width, self.height))
+
 
     def _build_track(self):
+        self.screen.fill((0, 0, 0))
         self.screen.blit(self.track, (0, 0))
+
 
     @property
     def original_map(self):
