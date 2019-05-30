@@ -469,6 +469,7 @@ class BuildMenuButton:
     def rescale(self):
         self.img = pygame.transform.scale(self.img, (37, 37))
 
+
 class Encyclopedia(BuildMenuButton):
     def __init__(self, screen, build_menu: BuildMenu, slot: int):
         super().__init__(screen, build_menu, slot)
