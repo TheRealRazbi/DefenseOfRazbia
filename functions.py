@@ -72,4 +72,19 @@ def load_path(name='default_map', also_print=False, scaling=(800, 600)):
     return new_res
 
 
+def clicked_in_a_box(hit_box: tuple, click: tuple):
+    if hit_box[0] <= click[0] <= hit_box[2] and \
+            hit_box[1] <= click[1] <= hit_box[3]:
+            return True
+    return False
+
+
+
+
+
+
+
+
+
+
 

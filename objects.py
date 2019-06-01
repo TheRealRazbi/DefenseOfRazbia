@@ -12,9 +12,6 @@ class ProjectileGroup(pygame.sprite.Group):
             sprite.draw(screen)
 
 
-
-
-
 class UnitGroup(pygame.sprite.Group):
     def __init__(self, *args):
         super().__init__(*args)
@@ -26,13 +23,6 @@ class UnitGroup(pygame.sprite.Group):
     def draw(self, screen):
         for sprite in self.sprites():
             sprite.draw(screen)
-
-
-
-
-
-
-
 
 
 class Entity(pygame.sprite.Sprite):
@@ -77,14 +67,11 @@ class Unit(Entity):
                 if self.hp > self.max_hp:
                     self.hp = self.max_hp
 
-
     def change_start_point(self, where: tuple):
         self.path.insert(0, (where[0], where[1]))
         self.x = self.path[0][0]
         self.y = self.path[0][1]
         self.move_point = 0
-
-
 
     def scale_img(self):
         size = int(50 * self.x_ratio), int(50 * self.y_ratio)
@@ -108,8 +95,6 @@ class Unit(Entity):
     def angle_change(self, angle):
         self._angle = angle
 
-
-
     @angle_change.setter
     def angle_change(self, angle):
         self._angle = angle
@@ -127,7 +112,6 @@ class Unit(Entity):
                 self.facing = 'w'
             elif start[0] < end[0]:
                 self.facing = 'e'
-
 
     def move(self):
         if self.moveable:
@@ -161,7 +145,6 @@ class Unit(Entity):
                         moving = end[0] - self.x
                         corner = True
 
-
                     self.x -= moving
 
                 elif start[0] < end[0]:
@@ -183,7 +166,6 @@ class Unit(Entity):
                 self.moveable = False
                 self.tp_to_arena()
 
-
     def tp_to_arena(self):
         self.kill()
 
@@ -195,8 +177,6 @@ class Unit(Entity):
 
         pygame.draw.line(screen, (0, 255, 0), (self.x-15, self.centred[1]+self.custom_hit_box[1]+30),
                                             (self.x+hp_percent, self.centred[1]+self.custom_hit_box[1]+30), 5)
-
-        # print(self.hp)
 
     @property
     def centred(self):
@@ -217,13 +197,10 @@ class Unit(Entity):
         self._facing = direction
 
 
-
 class Ally(Unit):
     def __init__(self, map_name, screen_size):
         super().__init__(map_name, screen_size)
 
-    # def tp_to_arena(self):
-    #     pass
 
 class Enemy(Unit):
     pass
@@ -232,7 +209,7 @@ class Enemy(Unit):
 class Footman(Ally):
     def __init__(self, map_name, screen_size):
         super().__init__(map_name, screen_size)
-        self.img = pygame.image.load('lib/images/footman.png')
+        self.img = pygame.image.load('lib/images/new_footman.png')
         self.custom_hit_box = 50, 30  # for scale 50, 50
         self.scale_img()
 
@@ -278,17 +255,8 @@ class Tower(pygame.sprite.Sprite):
                 else:
                     self.cooldown -= 1
                     break
-                    # print('reloading')
-                pass
-            else:
-                # print(f'{unit} with coordonates {unit.centred[0]} {unit.centred[1]} and distance {int(distance)}'
-                #       f' x_change = {unit.x - self.middle[0]} y_change = {unit.y + self.middle[1]}')
-                pass
-            # print(distance)
-            pass
 
     def draw(self, screen):
-        # screen.blit(self.img, (self.hit_box[0], self.hit_box[1]))
         screen.blit(self.img, (self.x, self.y))
 
     @property
@@ -314,15 +282,13 @@ class Tower(pygame.sprite.Sprite):
 class HealingTower(Tower):
     def __init__(self, location: tuple, target_screen=None):
         super().__init__(location, target_screen=target_screen)
-        self.img = pygame.image.load('lib/images/healing_tower.png')
+        self.img = pygame.image.load('lib/images/new_healing_tower.png')
         self.cost = 10
         self.range = 175
         self.custom_hit_box = [50, 50]
         self.power = 5
         self.projectile = HealingShot
-        # print(self.middle)
         self.scale_img()
-        # print(self.middle)
 
 
 class Projectile(pygame.sprite.Sprite):
@@ -340,7 +306,7 @@ class Projectile(pygame.sprite.Sprite):
 
     def update(self):
         if self.target.hit_box[0] <= self.x <= self.target.hit_box[2] and\
-            self.target.hit_box[1] <= self.y <= self.target.hit_box[3]:
+                self.target.hit_box[1] <= self.y <= self.target.hit_box[3]:
             self.target.hit(self.type, self.power)
             self.kill()
 
@@ -353,7 +319,6 @@ class Projectile(pygame.sprite.Sprite):
             self.y += self.speed
         else:
             self.y -= self.speed
-
 
     def draw(self, screen):
         screen.blit(self.img, (self.x, self.y))
@@ -400,7 +365,6 @@ class Handle:
                         self.x -= 100
                     else:
                         self.x += 100
-                    # print('CLICKED', self.active)
 
     def draw(self, screen):
         screen.blit(self._handle, (self.x, self.y))
@@ -423,44 +387,65 @@ class BuildMenu:
         self.img = pygame.image.load("lib/images/BasicMenu.png")
         # self.img = pygame.transform.scale(self.img, (100, 300))
 
-    def check_for_handle(self):
-        if self.handle.active:
-            pass
+    def check_clicks(self, click):
+        pass
+        slots = []
+        for group in self.buttons:
+            for index, slot in enumerate(group):
+                if index % 2:
+                    slots.append(slot)
+
+        for slot in slots:
+            x, y = self.slot(slot, 0, coordinates_only=True)
+            hit_box = x, y, x+37, y+37
+            if hit_box[0] <= click[0] <= hit_box[2] and \
+                    hit_box[1] <= click[1] <= hit_box[3]:
+                for group in self.buttons:
+                    for index, current in enumerate(group):
+                        if index % 2:
+                            if current == slot:
+                                    group[0].action()
 
     def draw(self):
         if self.handle.active:
             self.screen.blit(self.img, (self.x, self.y))
-            for button in self.buttons:
-                button.draw()
+            for group in self.buttons:
+                for index, button in enumerate(group):
+                    if index % 2:
+                        pass
+                    else:
+                        button.draw()
 
     @property
     def hit_box(self):
         return self.x, self.y, self.x + self.custom_hit_box[0], self.y + self.custom_hit_box[1]
 
-
-    def slot(self, slot):
+    def slot(self, slot, button, coordinates_only=False):
         slots = []
         for i in range(14):
             if i % 2:
-                to_add = 58
+                to_add = 57
                 temp = [self.x + to_add, self.y - 35 + (math.ceil(i / 2) * 47)]
 
             else:
                 to_add = 10
-                temp = [self.x + to_add, self.y + 11 + (math.ceil(i / 2) * 47)]
+                temp = [self.x + to_add, self.y + 10 + (math.ceil(i / 2) * 47)]
 
             slots.append(temp)
+
+        if not coordinates_only:
+            self.add(button, slot)
         return slots[slot]
 
-    def add(self, button):
-        self.buttons.append(button)
+    def add(self, button, slot):
+        self.buttons.append([button, slot])
 
 
 class BuildMenuButton:
     def __init__(self, screen, build_menu: BuildMenu, slot: int):
         self.build_menu = build_menu
         self.screen = screen
-        self.x, self.y = build_menu.slot(slot)
+        self.x, self.y = build_menu.slot(slot, self)
         self.img = ''
 
     def draw(self):
@@ -469,12 +454,29 @@ class BuildMenuButton:
     def rescale(self):
         self.img = pygame.transform.scale(self.img, (37, 37))
 
+    def action(self):
+        pass
+
+
+class HealingTowerButton(BuildMenuButton):
+    def __init__(self, screen, build_menu: BuildMenu, slot: int):
+        super().__init__(screen, build_menu, slot)
+        self.img = pygame.image.load('lib/images/new_healing_tower.png')
+        self.rescale()
+
+    def rescale(self):
+        self.img = pygame.transform.scale(self.img, (39, 39))
+
 
 class Encyclopedia(BuildMenuButton):
     def __init__(self, screen, build_menu: BuildMenu, slot: int):
         super().__init__(screen, build_menu, slot)
         self.img = pygame.image.load('lib/images/encyclopedia.png')
         self.rescale()
+
+    def action(self):
+        print('WORKS')
+
 
 if __name__ == '__main__':
     pass

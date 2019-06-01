@@ -36,6 +36,7 @@ class Game:
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self.handle.check(pos)
+                    self.build_menu.check_clicks(pos)
                     print(pos)
                     pass
 
@@ -82,7 +83,9 @@ class Game:
         self.handle = objects.Handle((self.width - 25, self.height/2 - 50))
         self.build_menu = objects.BuildMenu(screen=self.screen, handle=self.handle,
                                             screen_size=(self.width, self.height))
-        self.build_menu.add(objects.Encyclopedia(self.screen, self.build_menu, 0))
+        objects.Encyclopedia(self.screen, self.build_menu, 1)
+        objects.HealingTowerButton(self.screen, self.build_menu, 0)
+        # self.build_menu.add()
 
     def _build_track(self):
         self.screen.fill((0, 0, 0))
