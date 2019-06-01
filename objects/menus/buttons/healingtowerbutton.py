@@ -1,9 +1,9 @@
 import pygame
 from objects.menus.buildmenu import BuildMenu
-from objects.menus.buttons.buildmenubutton import BuildMenuButton
+from objects.menus.buttons.towerbuildbutton import TowerBuildButton
 
 
-class HealingTowerButton(BuildMenuButton):
+class HealingTowerButton(TowerBuildButton):
     def __init__(self, screen, build_menu: BuildMenu, slot: int):
         super().__init__(screen, build_menu, slot)
         self.img = pygame.image.load('lib/images/new_healing_tower.png')

@@ -38,7 +38,6 @@ def scale_size(size, coordinates, debug=False):
     return result
 
 
-
 def create_path(path, name):
     with open(f"lib/tracks/{name}/path.txt", "wb") as f:
         pickle.dump(path, f)
@@ -67,7 +66,6 @@ def load_path(name='default_map', also_print=False, scaling=(800, 600)):
     if also_print:
         print(new_res)
 
-
     return new_res
 
 
@@ -78,12 +76,26 @@ def clicked_in_a_box(hit_box: tuple, click: tuple):
     return False
 
 
+def load_tower_placements(map_name, also_print=False):
+    with open(f'lib/tracks/{map_name}/placements.txt', 'rb') as f:
+        res = pickle.load(f)
+
+    for group in res:
+        if group[0] > group[2]:
+            group[2], group[0] = group[0], group[2]
+        if group[1] > group[3]:
+            group[1], group[3] = group[3], group[1]
+
+        group[2], group[3] = abs(group[2]-group[0]), abs(group[3]-group[1])
+
+    if also_print:
+        print(res)
+    return res
 
 
-
-
-
-
+def create_tower_placement(placements, map_name):
+    with open(f"lib/tracks/{map_name}/placements.txt", "wb") as f:
+        pickle.dump(placements, f)
 
 
 

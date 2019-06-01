@@ -22,6 +22,9 @@ class Game:
         self.map_name = map_name
         self._select_track()
         self.projectiles = ProjectileGroup()
+        self.placements = functions.load_tower_placements('default_map')
+
+
 
     def run(self):
         run = True
@@ -61,6 +64,9 @@ class Game:
             self.handle.draw(self.screen)
             self.build_menu.draw()
             # print(self.units)
+
+            for group in self.placements:
+                pygame.draw.rect(self.screen, (150, 255, 150), group, 3)
 
             pygame.display.flip()
 
