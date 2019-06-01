@@ -1,8 +1,14 @@
 import functions
-import objects
 import pygame
-import objects
 import sys
+from objects.units.allies.footman import Footman
+from objects.towers.healingtower import HealingTower
+from objects.groups.unitgroup import UnitGroup
+from objects.groups.projectilegroup import ProjectileGroup
+from objects.menus.handle import Handle
+from objects.menus.buildmenu import BuildMenu
+from objects.menus.buttons.enyclopedia import Encyclopedia
+from objects.menus.buttons.healingtowerbutton import HealingTowerButton
 
 
 class Game:
@@ -11,11 +17,11 @@ class Game:
         self.width = size[0]
         self.height = size[1]
         self.towers = []
-        self.units = objects.UnitGroup()
+        self.units = UnitGroup()
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.map_name = map_name
         self._select_track()
-        self.projectiles = objects.ProjectileGroup()
+        self.projectiles = ProjectileGroup()
 
     def run(self):
         run = True
@@ -62,13 +68,13 @@ class Game:
         indent = 0
         # up_percent = int(100 * float(self.width / 600))
         for i in range(10):
-            footman = objects.Footman('default_map', screen_size=(self.width, self.height))
+            footman = Footman('default_map', screen_size=(self.width, self.height))
             footman.change_start_point((footman.path[0][0], -indent))
             footman.add(self.units)
             indent += 150
 
     def _place_tower(self):
-        self.t1 = objects.HealingTower((250, 250), self.screen)
+        self.t1 = HealingTower((250, 250), self.screen)
 
 
 
@@ -80,11 +86,11 @@ class Game:
 
         self.track = functions.load_track(name=self.map_name)
         self.track = pygame.transform.scale(self.track, (self.width, self.height))
-        self.handle = objects.Handle((self.width - 25, self.height/2 - 50))
-        self.build_menu = objects.BuildMenu(screen=self.screen, handle=self.handle,
-                                            screen_size=(self.width, self.height))
-        objects.Encyclopedia(self.screen, self.build_menu, 1)
-        objects.HealingTowerButton(self.screen, self.build_menu, 0)
+        self.handle = Handle((self.width - 25, self.height / 2 - 50))
+        self.build_menu = BuildMenu(screen=self.screen, handle=self.handle,
+                                                 screen_size=(self.width, self.height))
+        Encyclopedia(self.screen, self.build_menu, 1)
+        HealingTowerButton(self.screen, self.build_menu, 0)
         # self.build_menu.add()
 
     def _build_track(self):

@@ -1,4 +1,3 @@
-import objects
 import pickle
 import pygame
 

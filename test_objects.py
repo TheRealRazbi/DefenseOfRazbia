@@ -1,6 +1,5 @@
 import unittest
-from objects import Entity
-
+from objects.units.entity import Entity
 
 class TestObjects(unittest.TestCase):
 
