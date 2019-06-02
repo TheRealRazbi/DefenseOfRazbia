@@ -4,7 +4,8 @@ import math
 
 
 class BuildMenu:
-    def __init__(self, screen, screen_size: tuple, handle: Handle):
+    def __init__(self, screen, screen_size: tuple, handle: Handle, tower_group):
+        self.tower_group = tower_group
         self.screen = screen
         self.build_menu = False
         self.handle = handle

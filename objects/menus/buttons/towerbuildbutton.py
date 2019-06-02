@@ -9,7 +9,7 @@ class TowerBuildButton(BuildMenuButton):
         super().__init__(screen, build_menu, slot)
         self.active = False
         self.placements = functions.load_tower_placements('default_map')
-
+        self.custom_hit_box = 0, 0
 
     def action(self):
         self.active = not self.active
@@ -21,14 +21,33 @@ class TowerBuildButton(BuildMenuButton):
 
             for group in self.placements:
                 pygame.draw.rect(self.screen, (150, 255, 150), group, 3)
-            self.screen.blit(self.img, pygame.mouse.get_pos())
+            pos = pygame.mouse.get_pos()
+            if self.try_place(pos, just_try=True):
+                color_place = (0, 255, 0)
+            else:
+                color_place = (255, 0, 0)
 
 
-    def try_place(self, click):
-        for box in self.placements:
-            box = pygame.rect.Rect(box)
-            if box.contains((click[0], click[1],
-                            HealingTower.custom_hit_box[0],
-                            HealingTower.custom_hit_box[1])):
-                print("IT can be placed")
-                break
+
+            pygame.draw.rect(self.screen, color_place, (pos[0]-3, pos[1]-3,
+                                                        self.custom_hit_box[0]+6,
+                                                        self.custom_hit_box[1]+6))
+            self.screen.blit(self.big_img, pos)
+
+    def try_place(self, click, just_try=False):
+        for placement_box in self.placements:
+            placement_box = pygame.rect.Rect(placement_box)
+            where_tower_would_be = pygame.rect.Rect(click[0], click[1],
+                                    self.custom_hit_box[0],
+                                    self.custom_hit_box[1])
+            if placement_box.contains(where_tower_would_be):
+                for tower in self.build_menu.tower_group:
+                    if where_tower_would_be.colliderect(tower.hit_box):
+                        return False
+
+                if just_try:
+                    return True
+                HealingTower(click, self.screen).add(self.build_menu.tower_group)
+        return False
+
+

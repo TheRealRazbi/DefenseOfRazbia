@@ -9,7 +9,7 @@ from objects.menus.handle import Handle
 from objects.menus.buildmenu import BuildMenu
 from objects.menus.buttons.enyclopedia import Encyclopedia
 from objects.menus.buttons.healingtowerbutton import HealingTowerButton
-
+from objects.groups.towergroup import TowerGroup
 
 
 class Game:
@@ -17,7 +17,7 @@ class Game:
         pygame.init()
         self.width = size[0]
         self.height = size[1]
-        self.towers = []
+        self.towers = TowerGroup()
         self.units = UnitGroup()
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.map_name = map_name
@@ -58,20 +58,20 @@ class Game:
 
             self.units.move()
             self.units.draw(self.screen)
-            self.t1.draw(self.screen)
+            self.towers.draw(self.screen)
 
-            self.t1.check_for_units(self.units)
-            for projectile in self.t1.projectile_group:
-                self.projectiles.add(projectile)
-            self.t1.projectile_group.empty()
+            self.towers.check_for_units(self.units)
+
+            for group in self.towers.projectile_group:
+                for projectile in group:
+                    self.projectiles.add(projectile)
+            self.towers.projectile_group_empty()
             self.projectiles.update()
             self.projectiles.draw(self.screen)
 
             self.handle.draw(self.screen)
             self.build_menu.draw()
             # print(self.units)
-
-
 
             pygame.display.flip()
 
@@ -85,7 +85,7 @@ class Game:
             indent += 150
 
     def _place_tower(self):
-        self.t1 = HealingTower((250, 250), self.screen)
+        HealingTower((250, 250), self.screen).add(self.towers)
 
 
 
@@ -99,7 +99,8 @@ class Game:
         self.track = pygame.transform.scale(self.track, (self.width, self.height))
         self.handle = Handle((self.width - 25, self.height / 2 - 50))
         self.build_menu = BuildMenu(screen=self.screen, handle=self.handle,
-                                                 screen_size=(self.width, self.height))
+                                                 screen_size=(self.width, self.height),
+                                                    tower_group=self.towers)
         Encyclopedia(self.screen, self.build_menu, 1)
         HealingTowerButton(self.screen, self.build_menu, 0)
         # self.build_menu.add()
