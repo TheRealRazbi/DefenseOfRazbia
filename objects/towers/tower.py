@@ -60,8 +60,8 @@ class Tower(pygame.sprite.Sprite):
 
     def scale_img(self):
         self.img = pygame.transform.scale(self.img, (50, 50))
-        self.x = self.x
-        self.y = self.y
+        # self.x = self.x
+        # self.y = self.y
 
     @property
     def middle(self):

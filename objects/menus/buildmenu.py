@@ -66,5 +66,18 @@ class BuildMenu:
             self.add(button, slot)
         return slots[slot]
 
+    def is_button_active(self, slot):
+        for group in self.buttons:
+            if group[1] == slot:
+                active = group[0].active
+                return active
+        raise ValueError(f"Button on slot {slot} doesn't exist")
+
     def add(self, button, slot):
         self.buttons.append([button, slot])
+
+    def button(self, slot):
+        for group in self.buttons:
+            if group[1] == slot:
+                return group[0]
+

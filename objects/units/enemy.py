@@ -1,4 +1,4 @@
-from temp_objects.units.unit import Unit
+from objects.units.unit import Unit
 
 
 class Enemy(Unit):

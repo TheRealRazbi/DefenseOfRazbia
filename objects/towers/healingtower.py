@@ -4,13 +4,16 @@ import pygame
 
 
 class HealingTower(Tower):
+    custom_hit_box = [50, 50]
+
     def __init__(self, location: tuple, target_screen=None):
         super().__init__(location, target_screen=target_screen)
         self.img = pygame.image.load('lib/images/new_healing_tower.png')
         self.cost = 10
         self.range = 175
-        self.custom_hit_box = [50, 50]
         self.power = 5
         self.projectile = HealingShot
+        # self.custom_hit_box = [50, 50]
+        self.img = pygame.transform.scale(self.img, self.custom_hit_box)
         self.scale_img()
 

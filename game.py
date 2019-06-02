@@ -11,6 +11,7 @@ from objects.menus.buttons.enyclopedia import Encyclopedia
 from objects.menus.buttons.healingtowerbutton import HealingTowerButton
 
 
+
 class Game:
     def __init__(self, size: tuple, map_name: str):
         pygame.init()
@@ -22,8 +23,6 @@ class Game:
         self.map_name = map_name
         self._select_track()
         self.projectiles = ProjectileGroup()
-        self.placements = functions.load_tower_placements('default_map')
-
 
 
     def run(self):
@@ -37,6 +36,8 @@ class Game:
         while run:
 
             clock.tick(60)
+            self._build_track()
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: sys.exit()
 
@@ -44,12 +45,17 @@ class Game:
                 pos = pygame.mouse.get_pos()
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.build_menu.is_button_active(0):
+                        self.build_menu.button(0).try_place(pos)
                     self.handle.check(pos)
                     self.build_menu.check_clicks(pos)
+
                     print(pos)
                     pass
 
-            self._build_track()
+            if self.build_menu.is_button_active(0):
+                self.build_menu.button(0).place_mode()
+
             self.units.move()
             self.units.draw(self.screen)
             self.t1.draw(self.screen)
@@ -65,8 +71,7 @@ class Game:
             self.build_menu.draw()
             # print(self.units)
 
-            for group in self.placements:
-                pygame.draw.rect(self.screen, (150, 255, 150), group, 3)
+
 
             pygame.display.flip()
 

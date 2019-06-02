@@ -8,6 +8,7 @@ class BuildMenuButton:
         self.screen = screen
         self.x, self.y = build_menu.slot(slot, self)
         self.img = ''
+        self.big_img = ''
 
     def draw(self):
         self.screen.blit(self.img, (self.x, self.y))
