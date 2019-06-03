@@ -31,7 +31,7 @@ class Game:
         self.screen.fill((0, 0, 0))
         self._build_track()
         self._spawn_footman()
-        self._place_tower()
+        # self._place_tower()
 
         while run:
 
@@ -46,7 +46,7 @@ class Game:
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.build_menu.is_button_active(0):
-                        self.build_menu.button(0).try_place(pos)
+                        self.build_menu.button(0).try_place(self.build_menu.button(0)._normalize_click(pos))
                     self.handle.check(pos)
                     self.build_menu.check_clicks(pos)
 
