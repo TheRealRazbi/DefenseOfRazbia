@@ -45,12 +45,19 @@ class Game:
                 pos = pygame.mouse.get_pos()
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if self.build_menu.is_button_active(0):
-                        self.build_menu.button(0).try_place(self.build_menu.button(0)._normalize_click(pos))
-                    self.handle.check(pos)
-                    self.build_menu.check_clicks(pos)
+                    if event.button == 1:
+                        self.towers.check_click(pos)
+                        if self.build_menu.is_button_active(0):
+                            if self.build_menu.button(0).try_place(self.build_menu.button(0)._normalize_click(pos)):
+                                self.build_menu.button(0).active = False
 
-                    print(pos)
+                        self.handle.check(pos)
+                        self.build_menu.check_clicks(pos)
+                        # print(pos)
+                    if event.button == 3:
+                        self.build_menu.button(0).active = False
+                        self.towers.deselect()
+
                     pass
 
             if self.build_menu.is_button_active(0):

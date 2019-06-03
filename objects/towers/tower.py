@@ -1,11 +1,11 @@
 import pygame
 import math
 from objects.projectiles.healingshot import HealingShot
+import functions
 
 
 class Tower(pygame.sprite.Sprite):
     tower_size = 0, 0
-    towers = []
 
     def __init__(self, location: tuple, target_screen=None):
         super().__init__()
@@ -18,7 +18,7 @@ class Tower(pygame.sprite.Sprite):
         self.cost = 0
         self.power = 0
         self.target_screen = target_screen
-        self.selected = True
+        self._selected = False
         self.cooldown = 0
         self.projectile_group = pygame.sprite.Group()
         self.projectile = ''
@@ -50,9 +50,9 @@ class Tower(pygame.sprite.Sprite):
 
     @property
     def hit_box(self):
-        return self.centred[0], self.centred[1],\
-                self.centred[0]+self.custom_hit_box[0],\
-                self.centred[1]+self.custom_hit_box[1]
+        return self.x, self.y,\
+                self.x+self.custom_hit_box[0],\
+                self.y+self.custom_hit_box[1]
 
     @property
     def centred(self):
@@ -66,3 +66,32 @@ class Tower(pygame.sprite.Sprite):
     @property
     def middle(self):
         return self.x + self.custom_hit_box[0]/2, self.y + self.custom_hit_box[1]/2
+
+    @property
+    def selected(self):
+        return self._selected
+
+    @selected.setter
+    def selected(self, value: bool):
+        for the_only_group_this_sprite_will_exist in self.groups():
+            if value:
+                the_only_group_this_sprite_will_exist.try_to_select(self)
+            else:
+                self._selected = False
+
+
+    def check_click(self, click):
+        if functions.clicked_in_a_box(self.hit_box, click=click):
+            self.selected = True
+
+
+
+
+
+
+
+
+
+
+
+

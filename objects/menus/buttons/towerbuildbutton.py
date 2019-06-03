@@ -49,12 +49,13 @@ class TowerBuildButton(BuildMenuButton):
                                     tower.custom_hit_box[1]
 
                     if where_tower_would_be.colliderect(tower_hit_box):
-                        print(f'{where_tower_would_be} collides with {tower_hit_box}')
+                        # print(f'{where_tower_would_be} collides with {tower_hit_box}')
                         return False
 
                 if just_try:
                     return True
                 HealingTower(click, self.screen).add(self.build_menu.tower_group)
+                return True
         return False
 
     def _normalize_click(self, pos):
