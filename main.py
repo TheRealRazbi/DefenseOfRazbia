@@ -3,7 +3,7 @@ from game import Game
 import pygame
 
 if __name__ == '__main__':
-    size = width, height = 800, 600
+    size = width, height = 800, 900
     track_used = "default_map"
 
     path = functions.load_path(also_print=True)

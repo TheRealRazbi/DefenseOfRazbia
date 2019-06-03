@@ -4,9 +4,9 @@ import pygame
 
 
 class Unit(Entity):
-    def __init__(self, map_name, screen_size):
+    def __init__(self, screen_size):
         super().__init__()
-        self.path = functions.load_path(map_name, scaling=screen_size)
+        self.path = [[0, 0]]
         self.x = self.path[0][0]
         self.y = self.path[0][1]
         self.x_ratio = screen_size[0] / 800
@@ -133,6 +133,7 @@ class Unit(Entity):
 
     def tp_to_arena(self):
         self.kill()
+
 
     def draw(self, screen):
         hp_percent = (30 * (self.hp / self.max_hp)) - 15

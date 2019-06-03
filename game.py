@@ -10,6 +10,7 @@ from objects.menus.buildmenu import BuildMenu
 from objects.menus.buttons.enyclopedia import Encyclopedia
 from objects.menus.buttons.healingtowerbutton import HealingTowerButton
 from objects.groups.towergroup import TowerGroup
+from objects.arena.arena import Arena
 
 
 class Game:
@@ -19,6 +20,7 @@ class Game:
         self.height = size[1]
         self.towers = TowerGroup()
         self.units = UnitGroup()
+        self.arena_units = UnitGroup()
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.map_name = map_name
         self._select_track()
@@ -86,7 +88,7 @@ class Game:
         indent = 0
         # up_percent = int(100 * float(self.width / 600))
         for i in range(10):
-            footman = Footman('default_map', screen_size=(self.width, self.height))
+            footman = Footman('default_map', screen_size=(self.width, self.height-300))
             footman.change_start_point((footman.path[0][0], -indent))
             footman.add(self.units)
             indent += 150
@@ -103,7 +105,8 @@ class Game:
         # up_percent = int(100 * float(self.width / 600))
 
         self.track = functions.load_track(name=self.map_name)
-        self.track = pygame.transform.scale(self.track, (self.width, self.height))
+        self.track = pygame.transform.scale(self.track, (self.width, self.height-300))
+        self.arena = Arena(self.screen, (self.width, self.height), self.arena_units)
         self.handle = Handle((self.width - 25, self.height / 2 - 50))
         self.build_menu = BuildMenu(screen=self.screen, handle=self.handle,
                                                  screen_size=(self.width, self.height),
@@ -115,7 +118,7 @@ class Game:
     def _build_track(self):
         self.screen.fill((0, 0, 0))
         self.screen.blit(self.track, (0, 0))
-
+        self.arena.draw()
 
     @property
     def original_map(self):
