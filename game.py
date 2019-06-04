@@ -2,6 +2,7 @@ import functions
 import pygame
 import sys
 from objects.units.allies.footman import Footman
+from objects.units.enemies.grunt import Grunt
 from objects.towers.healingtower import HealingTower
 from objects.groups.unitgroup import UnitGroup
 from objects.groups.projectilegroup import ProjectileGroup
@@ -20,7 +21,6 @@ class Game:
         self.height = size[1]
         self.towers = TowerGroup()
         self.units = UnitGroup()
-        self.arena_units = UnitGroup()
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.map_name = map_name
         self._select_track()
@@ -33,6 +33,7 @@ class Game:
         self.screen.fill((0, 0, 0))
         self._build_track()
         self._spawn_footman()
+        self._spawn_enemies()
         # self._place_tower()
 
         while run:
@@ -65,8 +66,9 @@ class Game:
             if self.build_menu.is_button_active(0):
                 self.build_menu.button(0).place_mode()
 
-            self.units.move()
-            self.units.draw(self.screen)
+            self._unit_checks()
+            self.arena.check()
+
             self.towers.draw(self.screen)
 
             self.towers.check_for_units(self.units)
@@ -88,7 +90,8 @@ class Game:
         indent = 0
         # up_percent = int(100 * float(self.width / 600))
         for i in range(10):
-            footman = Footman('default_map', screen_size=(self.width, self.height-300))
+            footman = Footman('default_map', screen_size=(self.width, self.height-300),
+                              enemy_group=self.arena.enemy_units, arena=self.arena)
             footman.change_start_point((footman.path[0][0], -indent))
             footman.add(self.units)
             indent += 150
@@ -96,8 +99,9 @@ class Game:
     def _place_tower(self):
         HealingTower((250, 250), self.screen).add(self.towers)
 
-
-
+    def _unit_checks(self):
+        self.units.move()
+        self.units.draw(self.screen)
 
     def _select_track(self):
         if self.map_name == '':
@@ -106,7 +110,7 @@ class Game:
 
         self.track = functions.load_track(name=self.map_name)
         self.track = pygame.transform.scale(self.track, (self.width, self.height-300))
-        self.arena = Arena(self.screen, (self.width, self.height), self.arena_units)
+        self.arena = Arena(self.screen, (self.width, self.height))
         self.handle = Handle((self.width - 25, self.height / 2 - 50))
         self.build_menu = BuildMenu(screen=self.screen, handle=self.handle,
                                                  screen_size=(self.width, self.height),
@@ -114,6 +118,10 @@ class Game:
         Encyclopedia(self.screen, self.build_menu, 1)
         HealingTowerButton(self.screen, self.build_menu, 0)
         # self.build_menu.add()
+
+    def _spawn_enemies(self):
+        Grunt((self.width, self.height), self.arena.ally_units, self.arena)
+
 
     def _build_track(self):
         self.screen.fill((0, 0, 0))

@@ -1,4 +1,5 @@
 import pygame
+import functions
 
 
 class Projectile(pygame.sprite.Sprite):
@@ -18,6 +19,8 @@ class Projectile(pygame.sprite.Sprite):
         if self.target.hit_box[0] <= self.x <= self.target.hit_box[2] and\
                 self.target.hit_box[1] <= self.y <= self.target.hit_box[3]:
             self.target.hit(self.type, self.power)
+            self.kill()
+        elif self.target.in_arena:
             self.kill()
 
         if self.x < self.target.x:

@@ -37,10 +37,13 @@ class Tower(pygame.sprite.Sprite):
                     if self.projectile == HealingShot and unit.hp == unit.max_hp:
                         pass
                     else:
-                        projectile = self.projectile(self.middle, unit, self.power)
-                        self.projectile_group.add(projectile)
-                        # print(f"SHOT {unit}")
-                        break
+                        if unit.in_arena:
+                            pass
+                        else:
+                            projectile = self.projectile(self.middle, unit, self.power)
+                            self.projectile_group.add(projectile)
+                            # print(f"SHOT {unit}")
+                            break
                 else:
                     self.cooldown -= 1
                     break
@@ -60,8 +63,6 @@ class Tower(pygame.sprite.Sprite):
 
     def scale_img(self):
         self.img = pygame.transform.scale(self.img, (50, 50))
-        # self.x = self.x
-        # self.y = self.y
 
     @property
     def middle(self):

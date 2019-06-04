@@ -12,3 +12,7 @@ class UnitGroup(pygame.sprite.Group):
     def draw(self, screen):
         for sprite in self.sprites():
             sprite.draw(screen)
+
+    def check_enemies(self):
+        for sprite in self.sprites():
+            sprite.check_enemies()
