@@ -18,7 +18,7 @@ class Unit(Entity):
         self.prev_y = self.y
         self.move_point = 0
         self.move_count = 0
-        self.movement_speed = 2 * ((self.x_ratio + self.y_ratio)/2)
+        self.movement_speed = 25 * ((self.x_ratio + self.y_ratio)/2)
         self.img = ''
         self.img_stand = ''
         self.angle_change = 0
@@ -43,7 +43,57 @@ class Unit(Entity):
             distance = math.sqrt(abs(enemy.x - self.x)**2 + abs(enemy.y - self.y)**2)
 
             if distance < self.agro_range:
-                print(f'{enemy} fOUND')
+                # print(f'{enemy} fOUND')
+                pass
+
+    def _check_collision(self, change):
+        # hit_box = change[0], change[1], self.custom_hit_box[0], self.custom_hit_box[1]
+        hit_box = self.real_hit_box[0]+change[0], self.real_hit_box[1]+change[1], self.real_hit_box[2], self.real_hit_box[3]
+        hit_box = pygame.rect.Rect(hit_box)
+
+        unit_rects = self.arena.all_units.get_rects(self)
+        # if len(unit_rects) > 1:
+            # print(unit_rects)
+        if hit_box.collidelist(unit_rects) >= 0:
+            # print(f'{self} collided ')
+            return True
+        return False
+
+    def attack_move(self):
+        destination = self.arena.check_point[self.team][0],\
+                        self.arena.check_point[self.team][1],\
+                        30, 30
+
+        # if self.team == 0:
+        #     print(self, destination)
+        if self.real_hit_box.colliderect(destination):
+            pass
+            self.standing = True
+            # print(f'{self} arrived at {destination}, and his position is {self.x} {self.y}')
+        else:
+            pass
+            definitely_moving = False
+
+            x_change, _ = functions.move_towards_an_area((self.x, self.y), destination, self.movement_speed,
+                                                         move_y=False)
+
+            if not self._check_collision((x_change, 0)):
+                self.x += x_change
+                print('moved x')
+                if x_change != 0:
+                    definitely_moving = True
+
+            _, y_change = functions.move_towards_an_area((self.x, self.y), destination, self.movement_speed,
+                                                                move_x=False)
+
+            if not self._check_collision((0, y_change)):
+                self.y += y_change
+                print('moved y')
+                if y_change != 0:
+                    definitely_moving = True
+
+            self.standing = not definitely_moving
+                # print(f"{self}, can't move to {self.x, self.y}")
 
     def hit(self, power_type, power):
         if power_type == 'HEAL':
@@ -69,9 +119,9 @@ class Unit(Entity):
 
     @property
     def hit_box(self):
-        return self.centred[0], self.centred[1],\
-                self.centred[0]+self.custom_hit_box[0],\
-                self.centred[1]+self.custom_hit_box[1]
+        return pygame.rect.Rect(self.centred[0], self.centred[1],
+                self.centred[0]+self.custom_hit_box[0],
+                self.centred[1]+self.custom_hit_box[1])
 
     @property
     def facing(self):
@@ -153,13 +203,12 @@ class Unit(Entity):
                     start = self.path[self.move_point]
                     end = self.path[self.move_point + 1]
                     self._change_direction(start, end)
-            except IndexError as e:
-                # print(e)
-                # print('REE1')
+            except IndexError:
                 self.moveable = False
                 self.tp_to_arena()
 
     def tp_to_arena(self):
+        self.movement_speed = 2  # line added to made testing easier
         self.standing = True
         self.kill()
         self.facing = 'e'
@@ -174,10 +223,14 @@ class Unit(Entity):
         hp_percent = (30 * (self.hp / self.max_hp)) - 15
 
         pygame.draw.line(screen, (255, 255, 255), (self.x-15, self.centred[1]+self.custom_hit_box[1]+30),
-                                            (self.x+15, self.centred[1]+self.custom_hit_box[1]+30), 5)
+                                                (self.x+15, self.centred[1]+self.custom_hit_box[1]+30), 5)
 
         pygame.draw.line(screen, (0, 255, 0), (self.x-15, self.centred[1]+self.custom_hit_box[1]+30),
-                                            (self.x+hp_percent, self.centred[1]+self.custom_hit_box[1]+30), 5)
+                                                (self.x+hp_percent, self.centred[1]+self.custom_hit_box[1]+30), 5)
+
+    def _draw_hit_box(self, screen):
+        how_red = 255
+        pygame.draw.rect(screen, (how_red, how_red, how_red), self.real_hit_box, 2)
 
     def _select_image(self):
         if not self.standing:
@@ -186,20 +239,31 @@ class Unit(Entity):
                 self.move_count = 0
 
             if self.walking_animation:
-                self.img = self.img_move[self.move_count//frames_per_image]
+                try:
+                    self.img = self.img_move[self.move_count//frames_per_image]
+                except ZeroDivisionError:
+                    frames_per_image += 1
+                    self.img = self.img_move[self.move_count//frames_per_image]
                 self.move_count += 1
         elif self.img_stand != '':
             self.img = self.img_stand
 
-
     def draw(self, screen):
         self._select_image()
-        screen.blit(self.img, (self.hit_box[0], self.hit_box[1]))
+        if self.in_arena:
+            screen.blit(self.img, (self.real_hit_box[0], self.real_hit_box[1]))
+        else:
+            screen.blit(self.img, (self.centred[0], self.centred[1]))
         self._draw_hp_bar(screen)
+        self._draw_hit_box(screen)
 
     @property
     def centred(self):
         return self.x-self.custom_hit_box[0]/2, self.y-self.custom_hit_box[1]/2
+
+    @property
+    def real_hit_box(self):
+        return pygame.rect.Rect(self.centred[0], self.centred[1], self.custom_hit_box[0], self.custom_hit_box[1])
 
     @facing.setter
     def facing(self, direction):

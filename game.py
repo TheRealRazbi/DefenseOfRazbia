@@ -12,6 +12,7 @@ from objects.menus.buttons.enyclopedia import Encyclopedia
 from objects.menus.buttons.healingtowerbutton import HealingTowerButton
 from objects.groups.towergroup import TowerGroup
 from objects.arena.arena import Arena
+import time
 
 
 class Game:
@@ -25,6 +26,7 @@ class Game:
         self.map_name = map_name
         self._select_track()
         self.projectiles = ProjectileGroup()
+        self.footmen_to_spawn = 2
 
 
     def run(self):
@@ -34,6 +36,7 @@ class Game:
         self._build_track()
         self._spawn_footman()
         self._spawn_enemies()
+        self.time = time.time()
         # self._place_tower()
 
         while run:
@@ -43,7 +46,6 @@ class Game:
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: sys.exit()
-
 
                 pos = pygame.mouse.get_pos()
 
@@ -56,7 +58,7 @@ class Game:
 
                         self.handle.check(pos)
                         self.build_menu.check_clicks(pos)
-                        # print(pos)
+                        print(pos)
                     if event.button == 3:
                         self.build_menu.button(0).active = False
                         self.towers.deselect()
@@ -66,30 +68,18 @@ class Game:
             if self.build_menu.is_button_active(0):
                 self.build_menu.button(0).place_mode()
 
-            self._unit_checks()
             self.arena.check()
-
-            self.towers.draw(self.screen)
-
-            self.towers.check_for_units(self.units)
-
-            for group in self.towers.projectile_group:
-                for projectile in group:
-                    self.projectiles.add(projectile)
-            self.towers.projectile_group_empty()
-            self.projectiles.update()
-            self.projectiles.draw(self.screen)
-
-            self.handle.draw(self.screen)
-            self.build_menu.draw()
-            # print(self.units)
+            self._unit_checks()
+            self._tower_checks()
+            self._projectile_checks()
+            self._menu_checks()
 
             pygame.display.flip()
 
     def _spawn_footman(self):
         indent = 0
         # up_percent = int(100 * float(self.width / 600))
-        for i in range(10):
+        for i in range(self.footmen_to_spawn):
             footman = Footman('default_map', screen_size=(self.width, self.height-300),
                               enemy_group=self.arena.enemy_units, arena=self.arena)
             footman.change_start_point((footman.path[0][0], -indent))
@@ -103,6 +93,27 @@ class Game:
         self.units.move()
         self.units.draw(self.screen)
 
+    def _tower_checks(self):
+        self.towers.draw(self.screen)
+
+        self.towers.check_for_units(self.units)
+
+    def _projectile_checks(self):
+        for group in self.towers.projectile_group:
+            for projectile in group:
+                self.projectiles.add(projectile)
+        self.towers.projectile_group_empty()
+        self.projectiles.update()
+        self.projectiles.draw(self.screen)
+
+    def _menu_checks(self):
+        self.handle.draw(self.screen)
+        self.build_menu.draw()
+
+    def _time_units_to_arena(self):
+        if len(self.units) == 0:
+            print(f'Units reached the arena in {round(time.time()-self.time, 3)} seconds')
+
     def _select_track(self):
         if self.map_name == '':
             raise ValueError("Track name not specified")
@@ -110,7 +121,7 @@ class Game:
 
         self.track = functions.load_track(name=self.map_name)
         self.track = pygame.transform.scale(self.track, (self.width, self.height-300))
-        self.arena = Arena(self.screen, (self.width, self.height))
+        self.arena = Arena(self.screen, (self.width, self.height), self)
         self.handle = Handle((self.width - 25, self.height / 2 - 50))
         self.build_menu = BuildMenu(screen=self.screen, handle=self.handle,
                                                  screen_size=(self.width, self.height),
@@ -121,7 +132,6 @@ class Game:
 
     def _spawn_enemies(self):
         Grunt((self.width, self.height), self.arena.ally_units, self.arena)
-
 
     def _build_track(self):
         self.screen.fill((0, 0, 0))

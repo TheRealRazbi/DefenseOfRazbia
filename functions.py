@@ -98,4 +98,32 @@ def create_tower_placement(placements, map_name):
         pickle.dump(placements, f)
 
 
+def move_towards_an_area(current_pos, destination, speed, move_x=True, move_y=True):
+    if move_x:
+        for new_pos in range(speed):
+            for new_destination in range(speed):
+                if current_pos[0]+new_pos == destination[0]+new_destination:
+                    return 0, 0
+
+            if current_pos[0] < destination[0]:
+                return speed, 0
+            else:
+                return -speed, 0
+
+    if move_y:
+        for new_pos in range(speed):
+            for new_destination in range(speed):
+                if current_pos[1]+new_pos == destination[1]+new_destination:
+                    return 0, 0
+
+        if current_pos[1] < destination[1]:
+            return 0, speed
+        else:
+            return 0, -speed
+
+    return 0, 0
+
+
+
+
 

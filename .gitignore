@@ -2,3 +2,5 @@
 .__pycache_
 *.pyc
 schematic.png
+build.bat
+builds/
