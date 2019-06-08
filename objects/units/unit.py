@@ -34,7 +34,7 @@ class Unit(Entity):
         self.attack_range = self.custom_hit_box[0]+self.custom_hit_box[1] + 60
         self.attack_cooldown = 0
         self.attack_speed = 2
-        self.attack_damage = 25
+        self.attack_damage = 15
         self.closest_enemy = deque(maxlen=1)
         self.closest_enemy.append([0, self.aggro_range*10])
         self.enemies_found = [[999, self.aggro_range*10]]

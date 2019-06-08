@@ -84,7 +84,8 @@ class Arena:
         self.ally_target_y = self.height - 60
         self.enemy_target_x = self.width - 50
         self.enemy_target_y = self.height - 60
-
+        self.game.start_button.pressed = False
+        self.game.start_button_pressed = False
 
 
 

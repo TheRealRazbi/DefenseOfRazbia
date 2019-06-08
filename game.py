@@ -10,6 +10,7 @@ from objects.menus.handle import Handle
 from objects.menus.buildmenu import BuildMenu
 from objects.menus.buttons.enyclopedia import Encyclopedia
 from objects.menus.buttons.healingtowerbutton import HealingTowerButton
+from objects.menus.buttons.startroundbutton import StartRoundButton
 from objects.groups.towergroup import TowerGroup
 from objects.arena.arena import Arena
 from objects.groups.wave_control import WaveControl
@@ -31,9 +32,10 @@ class Game:
         self.projectiles = ProjectileGroup()
         self.footmen_to_spawn = 3
         self.wave_done = True
-        self.start_button_pressed = True
+        self.start_button_pressed = False
         self.wave_control = WaveControl(self)
-
+        self.start_button = StartRoundButton(self)
+        self.gold_manager = 0
 
     def run(self):
         clock = pygame.time.Clock()
@@ -65,7 +67,9 @@ class Game:
 
                         self.handle.check(pos)
                         self.build_menu.check_clicks(pos)
-                        # print(pos)
+                        self.start_button.check_click(pos)
+                        self.start_button_pressed = self.start_button.pressed
+                        print(pos)
                     if event.button == 3:
                         self.build_menu.button(0).active = False
                         self.towers.deselect()
@@ -75,8 +79,8 @@ class Game:
             if self.build_menu.is_button_active(0):
                 self.build_menu.button(0).place_mode()
 
+            self.start_button.draw()
             self._main_checks()
-
 
             pygame.display.flip()
 
@@ -99,6 +103,9 @@ class Game:
         self.arena.check()
         self._unit_checks()
         self.wave_done = self.arena.wave_done
+
+    def _draw_coin(self):
+        self.gold_manager.draw()
 
     def _unit_checks(self):
         self.units.move()
