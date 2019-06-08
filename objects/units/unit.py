@@ -2,6 +2,7 @@ from objects.units.entity import Entity
 import functions
 import pygame
 import math
+from collections import deque
 
 
 class Unit(Entity):
@@ -18,7 +19,7 @@ class Unit(Entity):
         self.prev_y = self.y
         self.move_point = 0
         self.move_count = 0
-        self.movement_speed = 25 * ((self.x_ratio + self.y_ratio)/2)
+        self.movement_speed = 2 * ((self.x_ratio + self.y_ratio)/2)
         self.img = ''
         self.img_stand = ''
         self.angle_change = 0
@@ -29,8 +30,14 @@ class Unit(Entity):
         self._facing = 'e'
         self.moveable = True
         self.choose_facing = True
-        self.agro_range = 50
-        self.attack_range = 20
+        self.aggro_range = 100
+        self.attack_range = self.custom_hit_box[0]+self.custom_hit_box[1] + 60
+        self.attack_cooldown = 0
+        self.attack_speed = 2
+        self.attack_damage = 25
+        self.closest_enemy = deque(maxlen=1)
+        self.closest_enemy.append([0, self.aggro_range*10])
+        self.enemies_found = [[999, self.aggro_range*10]]
         self.in_arena = False
         self.team = -1
         self.walking_animation = False
@@ -40,60 +47,102 @@ class Unit(Entity):
 
     def check_enemies(self):
         for enemy in self.enemies:
-            distance = math.sqrt(abs(enemy.x - self.x)**2 + abs(enemy.y - self.y)**2)
+            distance = int(math.sqrt(abs(enemy.real_hit_box[0] - self.real_hit_box[0])**2 +
+                                 abs(enemy.real_hit_box[1] - self.real_hit_box[1])**2))
 
-            if distance < self.agro_range:
+
+            if distance < self.aggro_range:
                 # print(f'{enemy} fOUND')
-                pass
+                # pygame.time.wait(9999)
+                in_group = False
+                for index, group in enumerate(self.enemies_found):
+                    if enemy in group:
+                        self.enemies_found[index] = [enemy, distance]
+                        in_group = True
+
+                if not in_group:
+                    self.enemies_found.append([enemy, distance])
+
+                for group in self.enemies_found:
+                    if self.closest_enemy[0][1] > group[1]:
+                        self.closest_enemy.append([enemy, distance])
+                        # print(f'{enemy} is the new closest to {self}, because {self.closest_enemy[0][1]}>{group[1]}')
+
+                return self.closest_enemy
 
     def _check_collision(self, change):
-        # hit_box = change[0], change[1], self.custom_hit_box[0], self.custom_hit_box[1]
         hit_box = self.real_hit_box[0]+change[0], self.real_hit_box[1]+change[1], self.real_hit_box[2], self.real_hit_box[3]
         hit_box = pygame.rect.Rect(hit_box)
 
         unit_rects = self.arena.all_units.get_rects(self)
-        # if len(unit_rects) > 1:
-            # print(unit_rects)
         if hit_box.collidelist(unit_rects) >= 0:
             # print(f'{self} collided ')
             return True
         return False
 
     def attack_move(self):
-        destination = self.arena.check_point[self.team][0],\
-                        self.arena.check_point[self.team][1],\
-                        30, 30
+        move_to_destination = True
+        destination = [self.arena.check_point[self.team][0],
+                        self.arena.check_point[self.team][1],
+                        30, 30]
+        arena_destination = destination
 
-        # if self.team == 0:
-        #     print(self, destination)
-        if self.real_hit_box.colliderect(destination):
-            pass
-            self.standing = True
-            # print(f'{self} arrived at {destination}, and his position is {self.x} {self.y}')
-        else:
-            pass
-            definitely_moving = False
+        closest_enemy = self.check_enemies()
+        if closest_enemy is not None:
+            destination[0] = closest_enemy[0][0].real_hit_box[0]
+            destination[1] = closest_enemy[0][0].real_hit_box[1]
+            destination[2] = closest_enemy[0][0].custom_hit_box[0]
+            destination[3] = closest_enemy[0][0].custom_hit_box[1]
 
-            x_change, _ = functions.move_towards_an_area((self.x, self.y), destination, self.movement_speed,
-                                                         move_y=False)
+            if closest_enemy[0][0].alive():
+                if closest_enemy[0][1] < self.attack_range:
+                    self.standing = True
+                    move_to_destination = False
+                    if self.attack_cooldown <= 0:
+                        closest_enemy[0][0].hit('DAMAGE', self.attack_damage)
+                        self.attack_cooldown += self.arena.game.target_fps/self.attack_speed
+                        # print('damaging')
+                    else:
+                        self.attack_cooldown -= 1
+                        # print('NOT READY YET')
 
-            if not self._check_collision((x_change, 0)):
-                self.x += x_change
-                print('moved x')
-                if x_change != 0:
-                    definitely_moving = True
+        if closest_enemy is not None and not closest_enemy[0][0].alive():
+            # print('DEAD')
+            self.closest_enemy.append([0, self.aggro_range * 10])
+            move_to_destination = True
 
-            _, y_change = functions.move_towards_an_area((self.x, self.y), destination, self.movement_speed,
-                                                                move_x=False)
+            # print(f'{closest_enemy[0][1]} < {self.attack_range}')
+        if move_to_destination:
+            if self.real_hit_box.colliderect(destination) and destination == arena_destination:
+                pass
+                self.standing = True
+                if self.team == 0:
+                    print('TEAM 1 WON WOO')
+                elif self.team == 1:
+                    print('enemies won , Feelsbadman')
+                # print(f'{self} arrived at {destination}, and his position is {self.x} {self.y}')
+            else:
+                pass
+                definitely_moving = False
 
-            if not self._check_collision((0, y_change)):
-                self.y += y_change
-                print('moved y')
-                if y_change != 0:
-                    definitely_moving = True
+                x_change, _ = functions.move_towards_an_area((self.x, self.y), destination, self.movement_speed,
+                                                             move_y=False)
 
-            self.standing = not definitely_moving
-                # print(f"{self}, can't move to {self.x, self.y}")
+                if not self._check_collision((x_change, 0)):
+                    self.x += x_change
+                    if x_change != 0:
+                        definitely_moving = True
+
+                _, y_change = functions.move_towards_an_area((self.x, self.y), destination, self.movement_speed,
+                                                                    move_x=False)
+
+                if not self._check_collision((0, y_change)):
+                    self.y += y_change
+                    if y_change != 0:
+                        definitely_moving = True
+
+                self.standing = not definitely_moving
+                    # print(f"{self}, can't move to {self.x, self.y}")
 
     def hit(self, power_type, power):
         if power_type == 'HEAL':
@@ -101,6 +150,10 @@ class Unit(Entity):
                 self.hp += power
                 if self.hp > self.max_hp:
                     self.hp = self.max_hp
+        elif power_type == 'DAMAGE':
+            self.hp -= power
+            if self.hp < 0:
+                self.kill()
 
     def change_start_point(self, where: tuple):
         self.path.insert(0, (where[0], where[1]))
@@ -219,14 +272,20 @@ class Unit(Entity):
         elif self.team == 1:
             self.add(self.arena.enemy_units)
 
+    def _draw_aggro_range(self, screen):
+        pygame.draw.circle(screen, (0, 0, 0), (int(self.x), int(self.y)), self.aggro_range, 3)
+
+    def _draw_attack_range(self, screen):
+        pygame.draw.circle(screen, (0, 0, 0), (int(self.x), int(self.y)), self.attack_range, 3)
+
     def _draw_hp_bar(self, screen):
         hp_percent = (30 * (self.hp / self.max_hp)) - 15
 
-        pygame.draw.line(screen, (255, 255, 255), (self.x-15, self.centred[1]+self.custom_hit_box[1]+30),
-                                                (self.x+15, self.centred[1]+self.custom_hit_box[1]+30), 5)
+        pygame.draw.line(screen, (255, 255, 255), (self.x-15, self.centred[1]+self.custom_hit_box[1]*1.5),
+                                                (self.x+15, self.centred[1]+self.custom_hit_box[1]*1.5), 5)
 
-        pygame.draw.line(screen, (0, 255, 0), (self.x-15, self.centred[1]+self.custom_hit_box[1]+30),
-                                                (self.x+hp_percent, self.centred[1]+self.custom_hit_box[1]+30), 5)
+        pygame.draw.line(screen, (0, 255, 0), (self.x-15, self.centred[1]+self.custom_hit_box[1]*1.5),
+                                                (self.x+hp_percent, self.centred[1]+self.custom_hit_box[1]*1.5), 5)
 
     def _draw_hit_box(self, screen):
         how_red = 255
@@ -256,6 +315,7 @@ class Unit(Entity):
             screen.blit(self.img, (self.centred[0], self.centred[1]))
         self._draw_hp_bar(screen)
         self._draw_hit_box(screen)
+        self._draw_aggro_range(screen)
 
     @property
     def centred(self):
@@ -282,4 +342,13 @@ class Unit(Entity):
         self.angle_change = 0
 
         self._facing = direction
+
+
+
+
+
+
+
+
+
 

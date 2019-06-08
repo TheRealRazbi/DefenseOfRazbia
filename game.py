@@ -16,6 +16,7 @@ import time
 
 
 class Game:
+    target_fps = 60
     def __init__(self, size: tuple, map_name: str):
         pygame.init()
         self.width = size[0]
@@ -26,22 +27,24 @@ class Game:
         self.map_name = map_name
         self._select_track()
         self.projectiles = ProjectileGroup()
-        self.footmen_to_spawn = 2
+        self.footmen_to_spawn = 3
+        
 
 
     def run(self):
-        run = True
         clock = pygame.time.Clock()
+        run = True
         self.screen.fill((0, 0, 0))
         self._build_track()
         self._spawn_footman()
         self._spawn_enemies()
         self.time = time.time()
+
         # self._place_tower()
 
         while run:
 
-            clock.tick(60)
+            clock.tick(self.target_fps)
             self._build_track()
 
             for event in pygame.event.get():
@@ -131,6 +134,8 @@ class Game:
         # self.build_menu.add()
 
     def _spawn_enemies(self):
+        Grunt((self.width, self.height), self.arena.ally_units, self.arena)
+        Grunt((self.width, self.height), self.arena.ally_units, self.arena)
         Grunt((self.width, self.height), self.arena.ally_units, self.arena)
 
     def _build_track(self):

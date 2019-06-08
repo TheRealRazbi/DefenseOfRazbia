@@ -10,7 +10,7 @@ class Footman(Ally):
         self.img = pygame.image.load('lib/images/new_footman.png')
         self.img_stand = pygame.image.load('lib/images/footman/standing.png')
         self.load_animation()
-
+        # self.hp = self.max_hp
 
         self.custom_hit_box = 50, 30  # for scale 50, 50
         self.scale_img()

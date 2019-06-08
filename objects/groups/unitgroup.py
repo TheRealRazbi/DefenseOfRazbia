@@ -22,7 +22,6 @@ class UnitGroup(pygame.sprite.Group):
     def attack_move(self):
         self.general_do('attack_move')
 
-
     def get_rects(self, besides):
         rects = []
         for sprite in self.sprites():

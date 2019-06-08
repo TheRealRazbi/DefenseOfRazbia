@@ -9,7 +9,7 @@ class Grunt(Enemy):
         self.custom_hit_box = 50, 30
         self.img = pygame.transform.scale(self.img, self.custom_hit_box)
 
-        self.hp = self.max_hp
+        self.hp = self.max_hp / 2
         self.x = 0
         self.y = 0
         self.arena.tp_to_arena(self)

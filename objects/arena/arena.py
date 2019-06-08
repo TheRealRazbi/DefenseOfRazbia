@@ -49,17 +49,18 @@ class Arena:
             raise ValueError("No valid team")
 
     def check(self):
-        if len(self.ally_units) == self.game.footmen_to_spawn:
+        if len(self.ally_units) == self.game.footmen_to_spawn or not self.waiting:
             if self.waiting:
                 self._init_all_units()
                 self.waiting = False
+                pygame.display.flip()
                 print('waiting to engage')
                 pygame.time.wait(1000)
                 print('engaging')
             else:
                 self.all_units.attack_move()
-        self.ally_units.check_enemies()
-        self.enemy_units.check_enemies()
+        # self.ally_units.check_enemies()
+        # self.enemy_units.check_enemies()
 
     def _init_all_units(self):
         self._all_units = UnitGroup()
