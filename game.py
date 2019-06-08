@@ -12,11 +12,13 @@ from objects.menus.buttons.enyclopedia import Encyclopedia
 from objects.menus.buttons.healingtowerbutton import HealingTowerButton
 from objects.groups.towergroup import TowerGroup
 from objects.arena.arena import Arena
+from objects.groups.wave_control import WaveControl
 import time
 
 
 class Game:
     target_fps = 60
+
     def __init__(self, size: tuple, map_name: str):
         pygame.init()
         self.width = size[0]
@@ -28,7 +30,9 @@ class Game:
         self._select_track()
         self.projectiles = ProjectileGroup()
         self.footmen_to_spawn = 3
-        
+        self.wave_done = True
+        self.start_button_pressed = True
+        self.wave_control = WaveControl(self)
 
 
     def run(self):
@@ -36,8 +40,8 @@ class Game:
         run = True
         self.screen.fill((0, 0, 0))
         self._build_track()
-        self._spawn_footman()
-        self._spawn_enemies()
+        # self._spawn_footman()
+        # self._spawn_enemies()
         self.time = time.time()
 
         # self._place_tower()
@@ -61,7 +65,7 @@ class Game:
 
                         self.handle.check(pos)
                         self.build_menu.check_clicks(pos)
-                        print(pos)
+                        # print(pos)
                     if event.button == 3:
                         self.build_menu.button(0).active = False
                         self.towers.deselect()
@@ -71,11 +75,8 @@ class Game:
             if self.build_menu.is_button_active(0):
                 self.build_menu.button(0).place_mode()
 
-            self.arena.check()
-            self._unit_checks()
-            self._tower_checks()
-            self._projectile_checks()
-            self._menu_checks()
+            self._main_checks()
+
 
             pygame.display.flip()
 
@@ -84,13 +85,20 @@ class Game:
         # up_percent = int(100 * float(self.width / 600))
         for i in range(self.footmen_to_spawn):
             footman = Footman('default_map', screen_size=(self.width, self.height-300),
-                              enemy_group=self.arena.enemy_units, arena=self.arena)
+                              arena=self.arena)
             footman.change_start_point((footman.path[0][0], -indent))
             footman.add(self.units)
             indent += 150
 
-    def _place_tower(self):
-        HealingTower((250, 250), self.screen).add(self.towers)
+    def _main_checks(self):
+        self._tower_checks()
+        self._projectile_checks()
+        self._menu_checks()
+        self.wave_control.check()
+
+        self.arena.check()
+        self._unit_checks()
+        self.wave_done = self.arena.wave_done
 
     def _unit_checks(self):
         self.units.move()
@@ -134,9 +142,9 @@ class Game:
         # self.build_menu.add()
 
     def _spawn_enemies(self):
-        Grunt((self.width, self.height), self.arena.ally_units, self.arena)
-        Grunt((self.width, self.height), self.arena.ally_units, self.arena)
-        Grunt((self.width, self.height), self.arena.ally_units, self.arena)
+        Grunt((self.width, self.height), self.arena)
+        Grunt((self.width, self.height), self.arena)
+        Grunt((self.width, self.height), self.arena)
 
     def _build_track(self):
         self.screen.fill((0, 0, 0))

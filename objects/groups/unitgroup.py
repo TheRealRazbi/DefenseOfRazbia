@@ -28,3 +28,8 @@ class UnitGroup(pygame.sprite.Group):
             if not besides == sprite:
                 rects.append(sprite.real_hit_box)
         return rects
+
+    def mass_murder(self):
+        self.general_do('kill')
+
+

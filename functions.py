@@ -98,6 +98,20 @@ def create_tower_placement(placements, map_name):
         pickle.dump(placements, f)
 
 
+def create_wave(wave_number, enemies):
+    with open(f"lib/waves/{wave_number}.txt", "wb") as f:
+        pickle.dump(enemies, f)
+
+
+def load_wave(wave_number, also_print=False):
+    with open(f"lib/waves/{wave_number}.txt", "rb") as f:
+        res = pickle.load(f)
+
+    if also_print:
+        print(res)
+    return res
+
+
 def move_towards_an_area(current_pos, destination, speed, move_x=True, move_y=True):
     if move_x:
         for new_pos in range(speed):

@@ -1,17 +1,24 @@
 import functions
-from game import Game
+import game
 import pygame
 
 if __name__ == '__main__':
     size = width, height = 800, 900
     track_used = "default_map"
 
-    path = functions.load_path(also_print=True)
-    placements = functions.load_tower_placements('default_map', also_print=True)
-    placements = [[225, 115, 690, 200], [335, 320, 790, 378], [70, 203, 296, 260],
-                  [213, 260, 297, 378], [433, 201, 497, 289], [332, 233, 397, 320],
-                  [531, 232, 588, 320], [622, 201, 687, 289], [104, 296, 177, 469],
-                  [183, 413, 418, 468], [333, 411, 416, 378], [190, 80, 100, 170]]
+    wave1 = [["Grunt", 15]]
+    wave2 = [["Grunt", 10], ["Grunt", 10]]
+
+    functions.create_wave(1, wave1)
+    functions.create_wave(2, wave2)
+
+
+    # path = functions.load_path(also_print=True)
+    # placements = functions.load_tower_placements('default_map', also_print=True)
+    # placements = [[225, 115, 690, 200], [335, 320, 790, 378], [70, 203, 296, 260],
+    #               [213, 260, 297, 378], [433, 201, 497, 289], [332, 233, 397, 320],
+    #               [531, 232, 588, 320], [622, 201, 687, 289], [104, 296, 177, 469],
+    #               [183, 413, 418, 468], [333, 411, 416, 378], [190, 80, 100, 170]]
 
     # path[0] = (85, 2)
     # path[1] = (85, 184)
@@ -34,7 +41,7 @@ if __name__ == '__main__':
     # path[19] = (435, 390)
     # path[20] = (820, 390)
 
-    functions.create_tower_placement(placements, 'default_map')
+    # functions.create_tower_placement(placements, 'default_map')
     # functions.create_path(path, 'default_map')
 
 
@@ -42,7 +49,7 @@ if __name__ == '__main__':
     # unit_rect = unit.get_rect()
     # screen.blit(unit, unit_rect)
 
-    g = Game(size, track_used)
+    g = game.Game(size, track_used)
     g.run()
 
 

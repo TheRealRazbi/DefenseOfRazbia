@@ -4,8 +4,8 @@ import os
 
 
 class Footman(Ally):
-    def __init__(self, map_name, screen_size, enemy_group, arena):
-        super().__init__(map_name, screen_size, enemy_group, arena)
+    def __init__(self, map_name, screen_size, arena):
+        super().__init__(map_name, screen_size, arena)
         self.walking_animation = True
         self.img = pygame.image.load('lib/images/new_footman.png')
         self.img_stand = pygame.image.load('lib/images/footman/standing.png')

@@ -18,6 +18,7 @@ class Arena:
         self.enemy_target_y = self.height - 60
         self.waiting = True
         self.check_point = [[self.width-100, self.height-150], [100, self.height-150]]
+        self.wave_done = True
 
     def draw(self):
         self.screen.blit(self.img, (0, self.height-300))
@@ -25,6 +26,7 @@ class Arena:
         self.ally_units.draw(self.screen)
 
     def tp_to_arena(self, unit):
+        self.wave_done = False
         if unit.team == 0:
 
             while not functions.clicked_in_a_box(self.hit_box, (self.ally_target_x, self.ally_target_y)):
@@ -73,11 +75,15 @@ class Arena:
     def all_units(self):
         return self._all_units
 
-
-
-
-
-
+    def clear(self):
+        self.all_units.empty()
+        self.enemy_units.empty()
+        self.ally_units.empty()
+        self.waiting = True
+        self.ally_target_x = 50
+        self.ally_target_y = self.height - 60
+        self.enemy_target_x = self.width - 50
+        self.enemy_target_y = self.height - 60
 
 
 

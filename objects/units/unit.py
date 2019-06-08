@@ -6,10 +6,10 @@ from collections import deque
 
 
 class Unit(Entity):
-    def __init__(self, screen_size, enemy_group, arena):
+    def __init__(self, screen_size, arena):
         super().__init__()
         self.arena = arena
-        self.enemies = enemy_group
+        self.enemies = []
         self.path = [[0, 0]]
         self.x = self.path[0][0]
         self.y = self.path[0][1]
@@ -19,7 +19,7 @@ class Unit(Entity):
         self.prev_y = self.y
         self.move_point = 0
         self.move_count = 0
-        self.movement_speed = 2 * ((self.x_ratio + self.y_ratio)/2)
+        self.movement_speed = 25 * ((self.x_ratio + self.y_ratio)/2)
         self.img = ''
         self.img_stand = ''
         self.angle_change = 0
@@ -49,7 +49,6 @@ class Unit(Entity):
         for enemy in self.enemies:
             distance = int(math.sqrt(abs(enemy.real_hit_box[0] - self.real_hit_box[0])**2 +
                                  abs(enemy.real_hit_box[1] - self.real_hit_box[1])**2))
-
 
             if distance < self.aggro_range:
                 # print(f'{enemy} fOUND')
@@ -116,6 +115,10 @@ class Unit(Entity):
             if self.real_hit_box.colliderect(destination) and destination == arena_destination:
                 pass
                 self.standing = True
+                self.arena.wave_done = True
+                self.arena.clear()
+                print(self.arena.ally_units)
+
                 if self.team == 0:
                     print('TEAM 1 WON WOO')
                 elif self.team == 1:
@@ -264,12 +267,13 @@ class Unit(Entity):
         self.movement_speed = 2  # line added to made testing easier
         self.standing = True
         self.kill()
-        self.facing = 'e'
         self.in_arena = True
         self.arena.tp_to_arena(self)
         if self.team == 0:
+            self.facing = 'e'
             self.add(self.arena.ally_units)
         elif self.team == 1:
+            self.facing = 'w'
             self.add(self.arena.enemy_units)
 
     def _draw_aggro_range(self, screen):
@@ -342,9 +346,6 @@ class Unit(Entity):
         self.angle_change = 0
 
         self._facing = direction
-
-
-
 
 
 
