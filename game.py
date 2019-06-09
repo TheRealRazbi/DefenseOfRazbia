@@ -114,12 +114,12 @@ class Game:
             indent += 150
 
     def _main_checks(self):
-        self._tower_checks()
-        self._projectile_checks()
         self.wave_control.check()
 
         self.arena.check()
         self._unit_checks()
+        self._tower_checks()
+        self._projectile_checks()
         self._menu_checks()
         self.wave_done = self.arena.wave_done
 
@@ -137,9 +137,9 @@ class Game:
         self.units.draw(self.screen)
 
     def _tower_checks(self):
-        self.towers.draw(self.screen)
-
+        self.towers.draw()
         self.towers.check_for_units(self.units)
+        self.towers.hovering()
 
     def _projectile_checks(self):
         for group in self.towers.projectile_group:

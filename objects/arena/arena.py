@@ -55,11 +55,9 @@ class Arena:
             if self.waiting:
                 self._init_all_units()
                 self.waiting = False
-                pygame.display.flip()
-                self.game.start_button.draw()
-                self.game._draw_coin()
-                print('waiting to engage')
-                pygame.time.wait(1000)
+                # self.game.start_button.draw()
+                # self.game._draw_coin()
+
                 print('engaging')
             else:
                 self.all_units.attack_move()

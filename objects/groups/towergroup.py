@@ -5,9 +5,9 @@ class TowerGroup(pygame.sprite.Group):
     def __init__(self):
         super().__init__()
 
-    def draw(self, screen):
+    def draw(self):
         for sprite in self.sprites():
-            sprite.draw(screen)
+            sprite.draw()
 
     def check_for_units(self, units):
             for sprite in self.sprites():
@@ -39,8 +39,9 @@ class TowerGroup(pygame.sprite.Group):
             else:
                 sprite._selected = False
 
-
-
+    def hovering(self):
+        for sprite in self.sprites():
+            sprite.hovering()
 
 
 

@@ -1,6 +1,7 @@
 from objects.projectiles.healingshot import HealingShot
 from objects.towers.tower import Tower
 import pygame
+import functions
 
 
 class HealingTower(Tower):
@@ -15,5 +16,6 @@ class HealingTower(Tower):
         self.projectile = HealingShot
         self.custom_hit_box = [50, 50]
         # self.img = pygame.transform.scale(self.img, self.custom_hit_box)
-        self.scale_img()
+        self.scale_img()    # cost, range, power, attack_speed
+        self.upgrade_menu = functions.load_tower_upgrades("HealingTower")
 

@@ -98,6 +98,21 @@ def create_tower_placement(placements, map_name):
         pickle.dump(placements, f)
 
 
+def create_tower_upgrades(upgrades: dict, tower: str):
+    with open(f"lib/tower_data/{tower.lower()}", "wb") as f:
+        pickle.dump(upgrades, f)
+
+
+def load_tower_upgrades(tower: str, also_print=False):
+    with open(f"lib/tower_data/{tower.lower()}", "rb") as f:
+        res = pickle.load(f)
+
+    if also_print:
+        print(res)
+
+    return res
+
+
 def create_wave(wave_number, enemies):
     with open(f"lib/waves/{wave_number}.txt", "wb") as f:
         pickle.dump(enemies, f)

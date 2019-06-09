@@ -6,11 +6,20 @@ if __name__ == '__main__':
     size = width, height = 800, 900
     track_used = "default_map"
 
-    wave1 = [["Grunt", 15]]
-    wave2 = [["Grunt", 10], ["Grunt", 10]]
+    upgrade_menu_heal = {1: [10, 140, 2, 1.1, ["level 1", "cost: 10", "range: 140", "power: 2", "attack_speed: 1.1",
+                                               "note: Great Value"], "misc"],
+                         2: [20, 150, 3, 1.2, ["level 2", "cost: 20", "range: 150", "power: 3", "attack_speed: 1.2"],
+                             "misc"],
+                         3: [35, 160, 4, 1.4, ["level 3", "cost: 35", "range: 160", "power: 4", "attack_speed: 1.4"],
+                             "misc"]}
 
-    functions.create_wave(1, wave1)
-    functions.create_wave(2, wave2)
+    functions.create_tower_upgrades(upgrade_menu_heal, 'HealingTower')
+
+    # wave1 = [["Grunt", 15]]
+    # wave2 = [["Grunt", 10], ["Grunt", 10]]
+    #
+    # functions.create_wave(1, wave1)
+    # functions.create_wave(2, wave2)
 
 
     # path = functions.load_path(also_print=True)

@@ -4,7 +4,7 @@ import pygame
 class GoldControl:
     def __init__(self, game):
         self.game = game
-        self.gold = 50
+        self._gold = 5000
         self.img = pygame.image.load("lib/images/coin.png")
         self.custom_hit_box = 50, 50
         self.img = pygame.transform.scale(self.img, self.custom_hit_box)
@@ -21,9 +21,13 @@ class GoldControl:
         self.game.screen.blit(gold_font_to_draw, (self.x+self.custom_hit_box[0]+2, self.y))
         # self.game.screen.blit(gold_font_to_draw, (100, 100))
 
+    @property
+    def gold(self):
+        return self._gold
 
-
-
+    @gold.setter
+    def gold(self, amount):
+        self._gold = int(amount)
 
 
 

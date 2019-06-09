@@ -18,23 +18,23 @@ class BuildMenu:
         # self.img = pygame.transform.scale(self.img, (100, 300))
 
     def check_clicks(self, click):
-        pass
-        slots = []
-        for group in self.buttons:
-            for index, slot in enumerate(group):
-                if index % 2:
-                    slots.append(slot)
+        if self.handle.active:
+            slots = []
+            for group in self.buttons:
+                for index, slot in enumerate(group):
+                    if index % 2:
+                        slots.append(slot)
 
-        for slot in slots:
-            x, y = self.slot(slot, 0, coordinates_only=True)
-            hit_box = x, y, x+37, y+37
-            if hit_box[0] <= click[0] <= hit_box[2] and \
-                    hit_box[1] <= click[1] <= hit_box[3]:
-                for group in self.buttons:
-                    for index, current in enumerate(group):
-                        if index % 2:
-                            if current == slot:
-                                    group[0].action()
+            for slot in slots:
+                x, y = self.slot(slot, 0, coordinates_only=True)
+                hit_box = x, y, x+37, y+37
+                if hit_box[0] <= click[0] <= hit_box[2] and \
+                        hit_box[1] <= click[1] <= hit_box[3]:
+                    for group in self.buttons:
+                        for index, current in enumerate(group):
+                            if index % 2:
+                                if current == slot:
+                                        group[0].action()
 
     def draw(self):
         if self.handle.active:
