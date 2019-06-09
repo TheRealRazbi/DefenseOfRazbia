@@ -10,10 +10,14 @@ from objects.menus.handle import Handle
 from objects.menus.buildmenu import BuildMenu
 from objects.menus.buttons.enyclopedia import Encyclopedia
 from objects.menus.buttons.healingtowerbutton import HealingTowerButton
+from objects.menus.buttons.goldtowerbutton import GoldTowerButton
 from objects.menus.buttons.startroundbutton import StartRoundButton
 from objects.groups.towergroup import TowerGroup
 from objects.arena.arena import Arena
 from objects.groups.wave_control import WaveControl
+from objects.groups.gold_control import GoldControl
+from objects.groups.lives_control import LivesControl
+from objects.menus.buttons.fastforwardbutton import FastForwardButton
 import time
 
 
@@ -35,7 +39,10 @@ class Game:
         self.start_button_pressed = False
         self.wave_control = WaveControl(self)
         self.start_button = StartRoundButton(self)
-        self.gold_manager = 0
+        self.gold_manager = GoldControl(self)
+        self.lives_manager = LivesControl(self)
+        self.fast_forward_button = FastForwardButton(self)
+        self.fast_forward = 0
 
     def run(self):
         clock = pygame.time.Clock()
@@ -49,8 +56,12 @@ class Game:
         # self._place_tower()
 
         while run:
-
-            clock.tick(self.target_fps)
+            if self.fast_forward == 1:
+                clock.tick(self.target_fps*2)
+            elif self.fast_forward == 2:
+                clock.tick(self.target_fps*3)
+            else:
+                clock.tick(self.target_fps)
             self._build_track()
 
             for event in pygame.event.get():
@@ -61,26 +72,34 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         self.towers.check_click(pos)
-                        if self.build_menu.is_button_active(0):
-                            if self.build_menu.button(0).try_place(self.build_menu.button(0)._normalize_click(pos)):
-                                self.build_menu.button(0).active = False
+
+                        self._button_build_check(0, pos)
+                        self._button_build_check(1, pos)
+
 
                         self.handle.check(pos)
                         self.build_menu.check_clicks(pos)
                         self.start_button.check_click(pos)
+                        self.fast_forward_button.check_click(pos)
+                        self.fast_forward = self.fast_forward_button.pressed
                         self.start_button_pressed = self.start_button.pressed
-                        print(pos)
+                        # print(pos)
                     if event.button == 3:
                         self.build_menu.button(0).active = False
+                        self.build_menu.button(1).active = False
                         self.towers.deselect()
 
                     pass
 
-            if self.build_menu.is_button_active(0):
-                self.build_menu.button(0).place_mode()
+            self._button_building_frame(0)
+            self._button_building_frame(1)
 
-            self.start_button.draw()
             self._main_checks()
+            self.start_button.draw()
+            self._draw_fast_forward_button()
+            self._draw_coin()
+            self._draw_lives()
+
 
             pygame.display.flip()
 
@@ -97,15 +116,21 @@ class Game:
     def _main_checks(self):
         self._tower_checks()
         self._projectile_checks()
-        self._menu_checks()
         self.wave_control.check()
 
         self.arena.check()
         self._unit_checks()
+        self._menu_checks()
         self.wave_done = self.arena.wave_done
+
+    def _draw_fast_forward_button(self):
+        self.fast_forward_button.draw()
 
     def _draw_coin(self):
         self.gold_manager.draw()
+
+    def _draw_lives(self):
+        self.lives_manager.draw()
 
     def _unit_checks(self):
         self.units.move()
@@ -132,6 +157,15 @@ class Game:
         if len(self.units) == 0:
             print(f'Units reached the arena in {round(time.time()-self.time, 3)} seconds')
 
+    def _button_building_frame(self, number):
+        if self.build_menu.is_button_active(number):
+            self.build_menu.button(number).place_mode()
+
+    def _button_build_check(self, number, pos):
+        if self.build_menu.is_button_active(number):
+            if self.build_menu.button(number).try_place(self.build_menu.button(0)._normalize_click(pos)):
+                self.build_menu.button(number).active = False
+
     def _select_track(self):
         if self.map_name == '':
             raise ValueError("Track name not specified")
@@ -144,8 +178,9 @@ class Game:
         self.build_menu = BuildMenu(screen=self.screen, handle=self.handle,
                                                  screen_size=(self.width, self.height),
                                                     tower_group=self.towers)
-        Encyclopedia(self.screen, self.build_menu, 1)
-        HealingTowerButton(self.screen, self.build_menu, 0)
+        Encyclopedia(self.screen, self.build_menu, 2, self)
+        HealingTowerButton(self.screen, self.build_menu, 0, self)
+        GoldTowerButton(self.screen, self.build_menu, 1, self)
         # self.build_menu.add()
 
     def _spawn_enemies(self):

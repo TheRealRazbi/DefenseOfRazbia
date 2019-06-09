@@ -55,7 +55,7 @@ class BuildMenu:
         for i in range(14):
             if i % 2:
                 to_add = 57
-                temp = [self.x + to_add, self.y - 35 + (math.ceil(i / 2) * 47)]
+                temp = [self.x + to_add, self.y - 37 + (math.ceil(i / 2) * 47)]
 
             else:
                 to_add = 10

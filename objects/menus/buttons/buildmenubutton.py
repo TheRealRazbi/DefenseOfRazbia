@@ -3,7 +3,8 @@ from objects.menus.buildmenu import BuildMenu
 
 
 class BuildMenuButton:
-    def __init__(self, screen, build_menu: BuildMenu, slot: int):
+    def __init__(self, screen, build_menu: BuildMenu, slot: int, game):
+        self.game = game
         self.build_menu = build_menu
         self.screen = screen
         self.x, self.y = build_menu.slot(slot, self)

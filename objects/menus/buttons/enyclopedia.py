@@ -4,8 +4,8 @@ import pygame
 
 
 class Encyclopedia(BuildMenuButton):
-    def __init__(self, screen, build_menu: BuildMenu, slot: int):
-        super().__init__(screen, build_menu, slot)
+    def __init__(self, screen, build_menu: BuildMenu, slot: int, game):
+        super().__init__(screen, build_menu, slot, game)
         self.img = pygame.image.load('lib/images/encyclopedia.png')
         self.rescale()
 

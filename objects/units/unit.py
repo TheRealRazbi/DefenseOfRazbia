@@ -19,7 +19,7 @@ class Unit(Entity):
         self.prev_y = self.y
         self.move_point = 0
         self.move_count = 0
-        self.movement_speed = 25 * ((self.x_ratio + self.y_ratio)/2)
+        self.movement_speed = 2 * ((self.x_ratio + self.y_ratio)/2)
         self.img = ''
         self.img_stand = ''
         self.angle_change = 0
@@ -34,7 +34,7 @@ class Unit(Entity):
         self.attack_range = self.custom_hit_box[0]+self.custom_hit_box[1] + 60
         self.attack_cooldown = 0
         self.attack_speed = 2
-        self.attack_damage = 15
+        self.attack_damage = 1
         self.closest_enemy = deque(maxlen=1)
         self.closest_enemy.append([0, self.aggro_range*10])
         self.enemies_found = [[999, self.aggro_range*10]]
@@ -117,11 +117,13 @@ class Unit(Entity):
                 self.standing = True
                 self.arena.wave_done = True
                 self.arena.clear()
-                print(self.arena.ally_units)
+                # print(self.arena.ally_units)
 
                 if self.team == 0:
                     print('TEAM 1 WON WOO')
+                    self.arena.game.gold_manager.gold += 10*self.arena.game.wave_control.wave
                 elif self.team == 1:
+                    self.arena.game.lives_manager.damage(self.attack_damage*self.hp)
                     print('enemies won , Feelsbadman')
                 # print(f'{self} arrived at {destination}, and his position is {self.x} {self.y}')
             else:
@@ -157,6 +159,8 @@ class Unit(Entity):
             self.hp -= power
             if self.hp < 0:
                 self.kill()
+        elif power_type == "TRASMUTE":
+            self.arena.game.gold_manager.gold += power
 
     def change_start_point(self, where: tuple):
         self.path.insert(0, (where[0], where[1]))
@@ -318,8 +322,8 @@ class Unit(Entity):
         else:
             screen.blit(self.img, (self.centred[0], self.centred[1]))
         self._draw_hp_bar(screen)
-        self._draw_hit_box(screen)
-        self._draw_aggro_range(screen)
+        # self._draw_hit_box(screen)
+        # self._draw_aggro_range(screen)
 
     @property
     def centred(self):

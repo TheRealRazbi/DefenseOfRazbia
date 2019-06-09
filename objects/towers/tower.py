@@ -7,8 +7,10 @@ import functions
 class Tower(pygame.sprite.Sprite):
     tower_size = 0, 0
 
-    def __init__(self, location: tuple, target_screen=None):
+    def __init__(self, location: tuple, game):
         super().__init__()
+        self.game = game
+        self.width, self.height = self.game.width, self.game.height
         self.x = location[0]
         self.y = location[1]
         self.custom_hit_box = [0, 0]
@@ -17,16 +19,29 @@ class Tower(pygame.sprite.Sprite):
         self.img = ''
         self.cost = 0
         self.power = 0
-        self.target_screen = target_screen
+        self.target_screen = self.game.screen
         self._selected = False
         self.cooldown = 0
         self.projectile_group = pygame.sprite.Group()
         self.projectile = ''
+        self.upgrade = 0
+        self.writing_font = pygame.font.Font("lib/fonts/big_noodle_titling.ttf", 40)
+        self.menu_hit_box = {"sell_button": [self.width - 100, 260, 100, 40]}
 
     def check_for_units(self, group):
         if self.selected:
-            pygame.draw.circle(self.target_screen, (0, 0, 0), (int(self.middle[0]), int(self.middle[1])),
+            left = self.width - 100
+            right = self.width
+            white = 255, 255, 255
+            black = 0, 0, 0
+            pygame.draw.circle(self.target_screen, black, (int(self.middle[0]), int(self.middle[1])),
                                self.range, 5)
+            pygame.draw.rect(self.target_screen, black, (left, 100, 100, 200))
+            pygame.draw.line(self.target_screen, white, (left, 265), (right, 265), 3)
+            to_render = self.writing_font.render("SELL", True, white)
+            self.target_screen.blit(to_render, (left, 260))
+
+
         for unit in group:
             distance = math.sqrt(abs(unit.x - self.middle[0])**2 + abs(unit.y - self.middle[1])**2)
 
@@ -40,7 +55,8 @@ class Tower(pygame.sprite.Sprite):
                         if unit.in_arena:
                             pass
                         else:
-                            projectile = self.projectile(self.middle, unit, self.power)
+                            print(self.power)
+                            projectile = self.projectile((self.middle), (unit), self.power)
                             self.projectile_group.add(projectile)
                             # print(f"SHOT {unit}")
                             break
@@ -82,6 +98,9 @@ class Tower(pygame.sprite.Sprite):
 
 
     def check_click(self, click):
+        if functions.clicked_in_a_box(self.menu_hit_box["sell_button"], click=click):
+            pass
+
         if functions.clicked_in_a_box(self.hit_box, click=click):
             self.selected = True
 

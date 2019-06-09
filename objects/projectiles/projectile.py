@@ -1,5 +1,4 @@
 import pygame
-import functions
 
 
 class Projectile(pygame.sprite.Sprite):

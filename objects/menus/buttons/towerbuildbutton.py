@@ -5,14 +5,20 @@ import pygame
 
 
 class TowerBuildButton(BuildMenuButton):
-    def __init__(self, screen, build_menu: BuildMenu, slot: int):
-        super().__init__(screen, build_menu, slot)
+    def __init__(self, screen, build_menu: BuildMenu, slot: int, game):
+        super().__init__(screen, build_menu, slot, game)
         self.active = False
         self.placements = functions.load_tower_placements('default_map')
         self.custom_hit_box = 0, 0
+        self.cost = 0
+        self.tower_declaration = self
 
     def action(self):
         self.active = not self.active
+        if self.active:
+            for i in range(len(self.build_menu.buttons)):
+                if self.build_menu.button(i) != self:
+                    self.build_menu.button(i).active = False
         self.build_menu.handle.active = False
         self.build_menu.handle.x += 100
 
@@ -42,19 +48,22 @@ class TowerBuildButton(BuildMenuButton):
             where_tower_would_be = pygame.rect.Rect(click[0], click[1],
                                     self.custom_hit_box[0],
                                     self.custom_hit_box[1])
+
             if placement_box.contains(where_tower_would_be):
                 for tower in self.build_menu.tower_group:
                     tower_hit_box = tower.x, tower.y,\
                                     tower.custom_hit_box[0],\
                                     tower.custom_hit_box[1]
 
-                    if where_tower_would_be.colliderect(tower_hit_box):
+                    if where_tower_would_be.colliderect(tower_hit_box) or self.game.gold_manager.gold < self.cost:
                         # print(f'{where_tower_would_be} collides with {tower_hit_box}')
                         return False
 
                 if just_try:
                     return True
-                HealingTower(click, self.screen).add(self.build_menu.tower_group)
+                self.game.gold_manager.gold -= self.cost
+                tower = self.tower_declaration(click, self.game)
+                tower.add(self.build_menu.tower_group)
                 return True
         return False
 
