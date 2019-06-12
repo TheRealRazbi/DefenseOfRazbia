@@ -19,6 +19,7 @@ class Arena:
         self.waiting = True
         self.check_point = [[self.width-100, self.height-150], [100, self.height-150]]
         self.wave_done = True
+        self.footman_to_spawn = self.game.footmen_to_spawn
 
     def draw(self):
         self.screen.blit(self.img, (0, self.height-300))
@@ -51,7 +52,7 @@ class Arena:
             raise ValueError("No valid team")
 
     def check(self):
-        if len(self.ally_units) == self.game.footmen_to_spawn or not self.waiting:
+        if len(self.ally_units) == self.footman_to_spawn or not self.waiting:
             if self.waiting:
                 self._init_all_units()
                 self.waiting = False
@@ -86,10 +87,10 @@ class Arena:
         self.enemy_target_y = self.height - 60
         self.game.start_button.pressed = False
         self.game.start_button_pressed = False
+        self.get_footman_to_spawn()
 
-
-
-
+    def get_footman_to_spawn(self):
+        self.footman_to_spawn = self.game.footmen_to_spawn
 
 
 

@@ -8,6 +8,7 @@ from objects.groups.unitgroup import UnitGroup
 from objects.groups.projectilegroup import ProjectileGroup
 from objects.menus.handle import Handle
 from objects.menus.buildmenu import BuildMenu
+from objects.menus.researchcentre import ResearchCentre
 from objects.menus.buttons.enyclopedia import Encyclopedia
 from objects.menus.buttons.healingtowerbutton import HealingTowerButton
 from objects.menus.buttons.goldtowerbutton import GoldTowerButton
@@ -18,6 +19,7 @@ from objects.groups.wave_control import WaveControl
 from objects.groups.gold_control import GoldControl
 from objects.groups.lives_control import LivesControl
 from objects.menus.buttons.fastforwardbutton import FastForwardButton
+from objects.menus.buttons.research.footmancount import FootmanCount
 import time
 
 
@@ -32,9 +34,11 @@ class Game:
         self.units = UnitGroup()
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.map_name = map_name
+        self.research_handle = Handle((0, self.height/2))
+        self.research_centre = ResearchCentre(self, self.research_handle)
+        self.footmen_to_spawn = 3
         self._select_track()
         self.projectiles = ProjectileGroup()
-        self.footmen_to_spawn = 3
         self.wave_done = True
         self.start_button_pressed = False
         self.wave_control = WaveControl(self)
@@ -75,10 +79,12 @@ class Game:
 
                         self._button_build_check(0, pos)
                         self._button_build_check(1, pos)
-
+                        # self._button_build_check(0, pos, research=True)
 
                         self.handle.check(pos)
+                        self.research_handle.check(pos)
                         self.build_menu.check_clicks(pos)
+                        self.research_centre.check_clicks(pos)
                         self.start_button.check_click(pos)
                         self.fast_forward_button.check_click(pos)
                         self.fast_forward = self.fast_forward_button.pressed
@@ -100,8 +106,10 @@ class Game:
             self._draw_coin()
             self._draw_lives()
 
-
             pygame.display.flip()
+
+    def _research_checks(self):
+        pass
 
     def _spawn_footman(self):
         indent = 0
@@ -152,6 +160,8 @@ class Game:
     def _menu_checks(self):
         self.handle.draw(self.screen)
         self.build_menu.draw()
+        self.research_handle.draw(self.screen)
+        self.research_centre.draw()
 
     def _time_units_to_arena(self):
         if len(self.units) == 0:
@@ -161,10 +171,21 @@ class Game:
         if self.build_menu.is_button_active(number):
             self.build_menu.button(number).place_mode()
 
-    def _button_build_check(self, number, pos):
-        if self.build_menu.is_button_active(number):
-            if self.build_menu.button(number).try_place(self.build_menu.button(0)._normalize_click(pos)):
-                self.build_menu.button(number).active = False
+    def _button_build_check(self, number, pos, research=False):
+        if research:
+            if self.research_centre.is_button_active(number):
+                if self.research_centre.button(number).try_place(self.research_centre.button(0)._normalize_click(pos)):
+                    self.research_centre.button(number).active = False
+        else:
+            if self.build_menu.is_button_active(number):
+                if self.build_menu.button(number).try_place(self.build_menu.button(0)._normalize_click(pos)):
+                    self.build_menu.button(number).active = False
+
+    def _declare_buttons(self):
+        FootmanCount(self, 0)
+        Encyclopedia(self.screen, self.build_menu, 2, self)
+        HealingTowerButton(self.screen, self.build_menu, 0, self)
+        GoldTowerButton(self.screen, self.build_menu, 1, self)
 
     def _select_track(self):
         if self.map_name == '':
@@ -178,9 +199,7 @@ class Game:
         self.build_menu = BuildMenu(screen=self.screen, handle=self.handle,
                                                  screen_size=(self.width, self.height),
                                                     tower_group=self.towers)
-        Encyclopedia(self.screen, self.build_menu, 2, self)
-        HealingTowerButton(self.screen, self.build_menu, 0, self)
-        GoldTowerButton(self.screen, self.build_menu, 1, self)
+        self._declare_buttons()
         # self.build_menu.add()
 
     def _spawn_enemies(self):
