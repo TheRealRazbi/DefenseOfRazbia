@@ -21,6 +21,7 @@ from objects.groups.lives_control import LivesControl
 from objects.menus.buttons.fastforwardbutton import FastForwardButton
 from objects.menus.buttons.research.footmancount import FootmanCount
 import time
+import asyncio
 
 
 class Game:
@@ -68,10 +69,11 @@ class Game:
                 clock.tick(self.target_fps)
             self._build_track()
 
+            pos = pygame.mouse.get_pos()
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: sys.exit()
 
-                pos = pygame.mouse.get_pos()
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
@@ -97,10 +99,12 @@ class Game:
 
                     pass
 
-            self._button_building_frame(0)
-            self._button_building_frame(1)
+            self._button_building_frame(0, pos)
+            self._button_building_frame(1, pos)
+
 
             self._main_checks()
+            self.research_centre.hover(pos)
             self.start_button.draw()
             self._draw_fast_forward_button()
             self._draw_coin()
@@ -167,9 +171,9 @@ class Game:
         if len(self.units) == 0:
             print(f'Units reached the arena in {round(time.time()-self.time, 3)} seconds')
 
-    def _button_building_frame(self, number):
+    def _button_building_frame(self, number, pos):
         if self.build_menu.is_button_active(number):
-            self.build_menu.button(number).place_mode()
+            self.build_menu.button(number).place_mode(pos)
 
     def _button_build_check(self, number, pos, research=False):
         if research:

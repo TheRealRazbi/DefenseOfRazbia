@@ -1,6 +1,7 @@
 from objects.menus.buildmenu import BuildMenu
 import pygame
 import functions
+import asyncio
 
 
 class ResearchCentre(BuildMenu):
@@ -20,7 +21,7 @@ class ResearchCentre(BuildMenu):
     def add(self, button, slot):
         self.buttons.append([button, slot])
         self.init_slot_list()
-        
+
     def init_slot_list(self):
         slots = []
         for group in self.buttons:
@@ -52,6 +53,18 @@ class ResearchCentre(BuildMenu):
                             if index % 2:
                                 if current == slot:
                                         group[0].research()
+
+    def hover(self, pos):
+        if self.handle.active:
+            for slot in self.slots:
+                x, y = self.slot(slot, 0, coordinates_only=True)
+                hit_box = x, y, x + 54, y + 83
+
+                if functions.clicked_in_a_box(hit_box, pos):
+                    self.button(slot).hover()
+
+
+
 
 
 

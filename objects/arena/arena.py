@@ -19,7 +19,7 @@ class Arena:
         self.waiting = True
         self.check_point = [[self.width-100, self.height-150], [100, self.height-150]]
         self.wave_done = True
-        self.footman_to_spawn = self.game.footmen_to_spawn
+        self.get_footman_to_spawn()
 
     def draw(self):
         self.screen.blit(self.img, (0, self.height-300))
@@ -54,6 +54,7 @@ class Arena:
     def check(self):
         if len(self.ally_units) == self.footman_to_spawn or not self.waiting:
             if self.waiting:
+
                 self._init_all_units()
                 self.waiting = False
                 # self.game.start_button.draw()

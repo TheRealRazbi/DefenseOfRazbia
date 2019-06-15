@@ -11,6 +11,9 @@ class Research(BuildMenuButton):
         self.tier = 0
         self.active = True
         self.slot = slot
+        self.button_hit_box = 54, 83
+        self.description = ['']
+        self.longest_word = 0
 
     def research(self):
         try:
@@ -18,6 +21,8 @@ class Research(BuildMenuButton):
             if self.try_buy(research_params[0]):
                 self.handle_research_param(research_params[1])
                 self.tier += 1
+                self.description = self.get_description()
+                self.setup_description_length()
                 _ = self.research_dict[self.tier+1]
 
         except KeyError:
@@ -36,7 +41,7 @@ class Research(BuildMenuButton):
     def handle_research_param(self, param):
         if self.research_name == 'footmancount':
             self.game.footmen_to_spawn += 1
-            self.game.arena.get_footman_to_spawn()
+            # self.game.arena.get_footman_to_spawn()
         else:
             raise ValueError("Research has no name")
 
@@ -48,17 +53,47 @@ class Research(BuildMenuButton):
         self.build_menu.buttons = new_buttons
         self.build_menu.init_slot_list()
 
-    def write_text(self, text, where, color=(0, 0, 0), size=30):
+    def write_text(self, text, where, color=(0, 0, 0), size=30, int_green=False):
         writing_font = pygame.font.Font("lib/fonts/big_noodle_titling.ttf", size)
+        if int_green:
+            words = text.split()
+            for index, word in enumerate(words):
+                try:
+                    word = int(word)
+
+                    len_so_far = 0
+                    for i in words[:index]:
+                        len_so_far += len(i)+1
+                    to_render = writing_font.render(str(word), True, (0, 255, 0))
+                    self.game.screen.blit(to_render, (where[0]+len_so_far*(size/2.85), where[1]))
+                    text = text.replace(str(word), "")
+
+                except ValueError:
+                    pass
 
         to_render = writing_font.render(str(text), True, color)
         self.game.screen.blit(to_render, where)
 
+    def hover(self):
+        pos = pygame.mouse.get_pos()
+        button_hit_box = 0+6.5*self.longest_word, 20 + 20 * len(self.description)
 
+        pygame.draw.rect(self.game.screen, (0, 0, 0), (pos[0],
+                                                          pos[1] - button_hit_box[1],
+                                                          button_hit_box[0], button_hit_box[1]))
 
+        for index, line in enumerate(self.description):
+            self.write_text(line, (pos[0] + 5, pos[1] - button_hit_box[1] + 22 * index),
+                            color=(255, 255, 255), size=18, int_green=True)
 
+    def setup_description_length(self):
+        self.longest_word = 0
+        for word in self.description:
+            if len(word) > self.longest_word:
+                self.longest_word = len(word)
 
-
+    def get_description(self):
+        return ['']
 
 
 

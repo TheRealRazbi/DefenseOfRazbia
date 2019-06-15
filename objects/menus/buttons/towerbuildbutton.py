@@ -22,12 +22,12 @@ class TowerBuildButton(BuildMenuButton):
         self.build_menu.handle.active = False
         self.build_menu.handle.x += 100
 
-    def place_mode(self):
+    def place_mode(self, pos):
         if self.active:
 
             for group in self.placements:
                 pygame.draw.rect(self.screen, (150, 255, 150), group, 3)
-            pos = pygame.mouse.get_pos()
+            # pos = pygame.mouse.get_pos()
             pos = pos[0] - self.custom_hit_box[0]/2, pos[1] - self.custom_hit_box[1]/2
 
             if self.try_place(pos, just_try=True):
