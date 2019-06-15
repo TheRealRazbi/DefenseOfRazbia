@@ -1,4 +1,5 @@
 from objects.menus.buttons.buildmenubutton import BuildMenuButton
+from objects.units.ally import Ally
 import pygame
 
 
@@ -41,9 +42,12 @@ class Research(BuildMenuButton):
     def handle_research_param(self, param):
         if self.research_name == 'footmancount':
             self.game.footmen_to_spawn += 1
-            # self.game.arena.get_footman_to_spawn()
+        elif self.research_name == 'naturalregeneration':
+            Ally.regeneration["power"] += 1
+            if param is not None:
+                Ally.regeneration["frequency"] += 1
         else:
-            raise ValueError("Research has no name")
+            raise ValueError(f"Research {self.research_name} was not recognized")
 
     def kill(self):
         new_buttons = []
@@ -66,7 +70,7 @@ class Research(BuildMenuButton):
                         len_so_far += len(i)+1
                     to_render = writing_font.render(str(word), True, (0, 255, 0))
                     self.game.screen.blit(to_render, (where[0]+len_so_far*(size/2.85), where[1]))
-                    text = text.replace(str(word), "")
+                    text = text.replace(str(word), "   "*len(str(word)))
 
                 except ValueError:
                     pass

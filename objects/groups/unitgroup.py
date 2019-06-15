@@ -32,4 +32,8 @@ class UnitGroup(pygame.sprite.Group):
     def mass_murder(self):
         self.general_do('kill')
 
+    def regenerate(self):
+        self.general_do('regenerate')
+
+
 

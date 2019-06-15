@@ -6,6 +6,8 @@ from collections import deque
 
 
 class Unit(Entity):
+    regeneration = {"frequency": 0.5, "ready": 0, "power": 0}
+
     def __init__(self, screen_size, arena):
         super().__init__()
         self.arena = arena
@@ -20,7 +22,6 @@ class Unit(Entity):
         self.move_point = 0
         self.move_count = 0
         self.movement_speed = 2 * ((self.x_ratio + self.y_ratio)/2)
-        self.regeneration = {"frequency": 1, "ready": 0, "power": 10}
         self.img = ''
         self.img_stand = ''
         self.angle_change = 0
@@ -317,7 +318,6 @@ class Unit(Entity):
             self.img = self.img_stand
 
     def draw(self, screen):
-        # self.regenerate()
         self._select_image()
         if self.in_arena:
             screen.blit(self.img, (self.real_hit_box[0], self.real_hit_box[1]))
@@ -355,7 +355,13 @@ class Unit(Entity):
 
     def regenerate(self):
         if self.regeneration["ready"] < 1:
-            self.regeneration["ready"] += int((1 / self.arena.game.target_fps) * self.regeneration["frequency"])
+            self.regeneration["ready"] += (1 / self.arena.game.target_fps) * self.regeneration["frequency"]
         else:
-            self.hp += self.regeneration["power"]
-            self.regeneration["ready"] = 0
+            if self.hp+self.regeneration["power"] < self.max_hp:
+                self.hp += self.regeneration["power"]
+                self.regeneration["ready"] = 0
+            else:
+                self.hp = self.max_hp
+
+
+

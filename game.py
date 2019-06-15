@@ -20,6 +20,7 @@ from objects.groups.gold_control import GoldControl
 from objects.groups.lives_control import LivesControl
 from objects.menus.buttons.fastforwardbutton import FastForwardButton
 from objects.menus.buttons.research.footmancount import FootmanCount
+from objects.menus.buttons.research.naturalregeneration import NaturalRegeneration
 import time
 import asyncio
 
@@ -84,9 +85,9 @@ class Game:
                         # self._button_build_check(0, pos, research=True)
 
                         self.handle.check(pos)
-                        self.research_handle.check(pos)
                         self.build_menu.check_clicks(pos)
                         self.research_centre.check_clicks(pos)
+                        self.research_handle.check(pos)
                         self.start_button.check_click(pos)
                         self.fast_forward_button.check_click(pos)
                         self.fast_forward = self.fast_forward_button.pressed
@@ -146,6 +147,7 @@ class Game:
 
     def _unit_checks(self):
         self.units.move()
+        self.units.regenerate()
         self.units.draw(self.screen)
 
     def _tower_checks(self):
@@ -190,6 +192,7 @@ class Game:
         Encyclopedia(self.screen, self.build_menu, 2, self)
         HealingTowerButton(self.screen, self.build_menu, 0, self)
         GoldTowerButton(self.screen, self.build_menu, 1, self)
+        NaturalRegeneration(self, 1)
 
     def _select_track(self):
         if self.map_name == '':
